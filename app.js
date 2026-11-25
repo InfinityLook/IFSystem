@@ -1,18 +1,17 @@
 const sectionInfo = {
-  prehled: { title: "Přehled", desc: "Hlavní velitelský přehled všech činností" },
-  podnikani: { title: "Podnikání", desc: "Rozvoz jídla, e-shop, PWA Google Play a další živnosti" },
-  sklad: { title: "Sklad", desc: "Zásoby, suroviny, obaly a expedice zboží" },
-  finance: { title: "Finance", desc: "Tržby, denní uzávěrky, faktury a náklady" },
-  projekty: { title: "Projekty", desc: "Rozvojové úkoly, nové funkce a interní plány" },
-  marketing: { title: "Marketing", desc: "Kampaně, sociální sítě, promo akce a Google Play" },
-  lide: { title: "Lidé", desc: "Kurýři, směny, výpomoc a interní role" },
-  kartoteka: { title: "Kartotéka", desc: "Dodavatelé, partneři, důležité kontakty a smlouvy" },
-  nastaveni: { title: "Nastavení", desc: "Konfigurace systému, oprávnění a napojení" }
+  prehled: { title: "Přehled", desc: "Ředitelský přehled výkonnosti a divizí" },
+  podnikani: { title: "Podnikání", desc: "Řízení divizí: Rozvoz jídla, E-shop, PWA Google Play a další činnosti" },
+  sklad: { title: "Sklad", desc: "Zásoby, suroviny, obaly a logistika" },
+  finance: { title: "Finance", desc: "Výnosy, náklady, uzávěrky a schvalování rozpočtů" },
+  projekty: { title: "Projekty", desc: "Strategické iniciativy a rozvojové projekty" },
+  marketing: { title: "Marketing", desc: "Akvizice zákazníků, kampaně a prezentace značek" },
+  lide: { title: "Lidé", desc: "Organizační struktura, role, směny a kurýři" },
+  kartoteka: { title: "Kartotéka", desc: "Evidence dodavatelů, partnerů a smluvních vztahů" },
+  nastaveni: { title: "Nastavení", desc: "Systémová konfigurace, oprávnění a integrace" }
 };
 
 // Datum v horní liště
 document.getElementById("todayDate").textContent = new Date().toLocaleDateString("cs-CZ", {
-  weekday: "long",
   day: "numeric",
   month: "long",
   year: "numeric"
@@ -46,77 +45,145 @@ document.getElementById("openSidebar").addEventListener("click", () => {
 document.getElementById("closeSidebar").addEventListener("click", closeMobileMenu);
 backdrop.addEventListener("click", closeMobileMenu);
 
-// Ukázková data
-const defaultItems = [
-  { id: 1, section: "podnikani", tag: "Rozvoz jídla", title: "Objednávka #104 – Dvořákova 12 (hotově 340 Kč)", status: "urgent" },
-  { id: 2, section: "podnikani", tag: "E-shop", title: "Balík #58 – Zásilkovna k odeslání", status: "progress" },
-  { id: 3, section: "sklad", tag: "Obaly", title: "Doobjednat menuboxy a tašky pro rozvoz", status: "urgent" },
-  { id: 4, section: "finance", tag: "Uzávěrka", title: "Kontrola denních tržeb a dokladů", status: "progress" },
-  { id: 5, section: "projekty", tag: "PWA Google Play", title: "Příprava aktualizace aplikace", status: "progress" }
+// Data divizí pro Divizní matici
+const divisionsData = [
+  {
+    name: "Rozvoz jídla",
+    sub: "Gastronomie & Logistika",
+    status: "V provozu",
+    statusType: "ok",
+    owner: "Provozní dispečink",
+    metric: "14 200 Kč",
+    deviation: "+11 % vs. průměr"
+  },
+  {
+    name: "E-shop",
+    sub: "Online prodej & Expedice",
+    status: "V provozu",
+    statusType: "ok",
+    owner: "Expedice & Sklad",
+    metric: "7 450 Kč",
+    deviation: "Bez odchylky"
+  },
+  {
+    name: "PWA Google Play",
+    sub: "Digitální produkt / Aplikace",
+    status: "Aktivní",
+    statusType: "ok",
+    owner: "Produktový vývoj",
+    metric: "1 900 Kč",
+    deviation: "+4 % aktivních"
+  },
+  {
+    name: "Další podnikání",
+    sub: "Ostatní obchodní aktivity",
+    status: "Kontrola",
+    statusType: "warn",
+    owner: "Vedení divize",
+    metric: "1 300 Kč",
+    deviation: "Čeká na uzávěrku"
+  }
 ];
 
+// Položky ke schválení vedením
+const defaultApprovals = [
+  { id: 101, division: "Rozvoz jídla", title: "Doplnění obalového materiálu (6 400 Kč)", time: "Dnes" },
+  { id: 102, division: "PWA Google Play", title: "Vydání nové produkční verze aplikace", time: "Dnes" },
+  { id: 103, division: "E-shop", title: "Úprava smluvních podmínek dopravce", time: "Včera" }
+];
+
+// Záznamy pro ostatní sekce menu
+const defaultItems = [
+  { id: 1, section: "podnikani", tag: "Rozvoz jídla", title: "Denní provozní přehled směn a kurýrů", status: "progress" },
+  { id: 2, section: "sklad", tag: "Zásoby", title: "Kontrola minimálních stavů obalů a surovin", status: "urgent" },
+  { id: 3, section: "finance", tag: "Reporting", title: "Měsíční konsolidace tržeb po divizích", status: "progress" },
+  { id: 4, section: "projekty", tag: "Infrastruktura", title: "Napojení interního portálu na centrální databázi", status: "progress" }
+];
+
+let approvals = JSON.parse(localStorage.getItem("il_exec_approvals")) || defaultApprovals;
 let items = JSON.parse(localStorage.getItem("il_ops_items")) || defaultItems;
 let activeSection = "prehled";
-let overviewFilter = "all";
-let searchQuery = "";
 
-function saveAndRender() {
+function saveAll() {
+  localStorage.setItem("il_exec_approvals", JSON.stringify(approvals));
   localStorage.setItem("il_ops_items", JSON.stringify(items));
   render();
 }
 
-function renderRow(item) {
-  const secLabel = sectionInfo[item.section]?.title || item.section;
-  const tagText = item.tag ? ` • ${item.tag}` : "";
-  const btnText = item.status === "urgent" ? "Převzít" : item.status === "progress" ? "Dokončit" : "Hotovo ✓";
+function renderOverview() {
+  // Počet položek ke schválení v KPI
+  const pendingCount = approvals.length;
+  document.getElementById("kpiPending").textContent = pendingCount;
+  document.getElementById("kpiPendingBadge").textContent =
+    pendingCount === 1 ? "1 položka" : `${pendingCount} položek`;
 
-  return `
-    <div class="task-row">
-      <div>
-        <div><span class="status-dot st-${item.status}"></span><strong>${item.title}</strong></div>
-        <div class="task-meta">${secLabel}${tagText}</div>
+  // Divizní matice
+  const tbody = document.getElementById("divisionsTableBody");
+  tbody.innerHTML = divisionsData.map((d) => `
+    <tr data-jump="podnikani">
+      <td>
+        <span class="div-name">${d.name}</span>
+        <span class="div-sub">${d.sub}</span>
+      </td>
+      <td>
+        <span class="status-pill ${d.statusType === "ok" ? "pill-ok" : "pill-warn"}">● ${d.status}</span>
+      </td>
+      <td>${d.owner}</td>
+      <td><strong>${d.metric}</strong></td>
+      <td class="muted">${d.deviation}</td>
+    </tr>
+  `).join("");
+
+  // Ke schválení vedením
+  const appList = document.getElementById("approvalsList");
+  if (!approvals.length) {
+    appList.innerHTML = `<div class="approval-item"><span class="muted">Žádné otevřené položky ke schválení.</span></div>`;
+    return;
+  }
+
+  appList.innerHTML = approvals.map((a) => `
+    <div class="approval-item">
+      <div class="approval-meta">
+        <span>${a.division}</span>
+        <span>${a.time}</span>
       </div>
-      <button data-action="cycle" data-id="${item.id}">${btnText}</button>
+      <div class="approval-title">${a.title}</div>
+      <div class="approval-actions">
+        <button class="btn-approve" data-app-action="approve" data-id="${a.id}">Schválit</button>
+        <button class="btn-reject" data-app-action="reject" data-id="${a.id}">Zamítnout</button>
+      </div>
     </div>
-  `;
+  `).join("");
+}
+
+function renderDetail() {
+  const detailList = document.getElementById("detailList");
+  const secItems = items.filter((i) => i.section === activeSection);
+
+  if (!secItems.length) {
+    detailList.innerHTML = `<div class="task-row"><span class="muted">V sekci ${sectionInfo[activeSection].title} zatím nejsou žádné záznamy.</span></div>`;
+    return;
+  }
+
+  detailList.innerHTML = secItems.map((item) => {
+    const tagText = item.tag ? ` • ${item.tag}` : "";
+    const btnText = item.status === "urgent" ? "Převzít" : item.status === "progress" ? "Uzavřít" : "Uzavřeno ✓";
+    return `
+      <div class="task-row">
+        <div>
+          <div><span class="status-dot st-${item.status}"></span><strong>${item.title}</strong></div>
+          <div class="muted">${sectionInfo[item.section].title}${tagText}</div>
+        </div>
+        <button data-action="cycle" data-id="${item.id}">${btnText}</button>
+      </div>
+    `;
+  }).join("");
 }
 
 function render() {
-  // KPI karty
-  document.getElementById("kpiOps").textContent =
-    items.filter((i) => i.section === "podnikani" && i.status !== "done").length;
-  document.getElementById("kpiStock").textContent =
-    items.filter((i) => i.section === "sklad" && i.status !== "done").length;
-  document.getElementById("kpiFinance").textContent =
-    items.filter((i) => i.section === "finance" && i.status !== "done").length;
-  document.getElementById("kpiProjects").textContent =
-    items.filter((i) => i.section === "projekty" && i.status !== "done").length;
-
-  // Vyhledávání
-  const matchesSearch = (item) => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return item.title.toLowerCase().includes(q) || (item.tag && item.tag.toLowerCase().includes(q));
-  };
-
-  // Přehled (hlavní stránka)
-  const overviewList = document.getElementById("overviewList");
-  const overviewItems = items.filter((i) => {
-    const secOk = overviewFilter === "all" || i.section === overviewFilter;
-    return secOk && matchesSearch(i);
-  });
-
-  overviewList.innerHTML = overviewItems.length
-    ? overviewItems.map(renderRow).join("")
-    : `<div class="task-row"><span class="task-meta">Žádné záznamy neodpovídají výběru.</span></div>`;
-
-  // Detail sekce
+  renderOverview();
   if (activeSection !== "prehled") {
-    const detailList = document.getElementById("detailList");
-    const secItems = items.filter((i) => i.section === activeSection && matchesSearch(i));
-    detailList.innerHTML = secItems.length
-      ? secItems.map(renderRow).join("")
-      : `<div class="task-row"><span class="task-meta">V sekci ${sectionInfo[activeSection].title} zatím nejsou žádné záznamy.</span></div>`;
+    renderDetail();
   }
 }
 
@@ -128,6 +195,7 @@ function switchSection(section) {
 
   const info = sectionInfo[section];
   document.getElementById("pageTitle").textContent = info.title;
+  document.getElementById("crumbCurrent").textContent = info.title;
 
   const isOverview = section === "prehled";
   document.getElementById("view-prehled").classList.toggle("hidden", !isOverview);
@@ -142,50 +210,40 @@ function switchSection(section) {
   render();
 }
 
-// Klikání na menu
+// Navigace v menu
 document.querySelectorAll(".nav-item").forEach((btn) => {
   btn.addEventListener("click", () => switchSection(btn.dataset.section));
 });
 
-// Proklik z karet pilířů na Přehledu
-document.querySelectorAll(".pillar-card").forEach((card) => {
-  card.addEventListener("click", () => switchSection(card.dataset.jump));
-});
-
-// Filtry na Přehledu
-document.querySelectorAll("#overviewFilters .filter-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    overviewFilter = btn.dataset.filter;
-    document.querySelectorAll("#overviewFilters .filter-btn").forEach((b) =>
-      b.classList.toggle("active", b.dataset.filter === overviewFilter)
-    );
-    render();
-  });
-});
-
-// Vyhledávání
-document.getElementById("searchInput").addEventListener("input", (e) => {
-  searchQuery = e.target.value.trim();
-  render();
-});
-
-// Změna stavu řádku
+// Prokliky z Přehledu do divizí
 document.getElementById("mainContent").addEventListener("click", (e) => {
-  const btn = e.target.closest('button[data-action="cycle"]');
-  if (!btn) return;
-  const id = Number(btn.dataset.id);
-  const order = ["urgent", "progress", "done"];
+  const jumpEl = e.target.closest("[data-jump]");
+  if (jumpEl) {
+    switchSection(jumpEl.dataset.jump);
+    return;
+  }
 
-  items = items.map((item) => {
-    if (item.id !== id) return item;
-    const next = order[(order.indexOf(item.status) + 1) % order.length];
-    return { ...item, status: next };
-  });
+  const appBtn = e.target.closest("[data-app-action]");
+  if (appBtn) {
+    const id = Number(appBtn.dataset.id);
+    approvals = approvals.filter((a) => a.id !== id);
+    saveAll();
+    return;
+  }
 
-  saveAndRender();
+  const cycleBtn = e.target.closest('button[data-action="cycle"]');
+  if (cycleBtn) {
+    const id = Number(cycleBtn.dataset.id);
+    const order = ["urgent", "progress", "done"];
+    items = items.map((item) => {
+      if (item.id !== id) return item;
+      return { ...item, status: order[(order.indexOf(item.status) + 1) % order.length] };
+    });
+    saveAll();
+  }
 });
 
-// Modal pro nový záznam
+// Modal: Nový záznam
 const modal = document.getElementById("newModal");
 
 function openModalWithSection(defaultSec) {
@@ -210,11 +268,29 @@ document.getElementById("newItemForm").addEventListener("submit", (e) => {
   });
   e.target.reset();
   modal.close();
-  saveAndRender();
+  saveAll();
+});
+
+// Modal: Nový bod ke schválení
+const appModal = document.getElementById("approvalModal");
+document.getElementById("openApprovalModal").addEventListener("click", () => appModal.showModal());
+document.getElementById("closeApprovalModal").addEventListener("click", () => appModal.close());
+
+document.getElementById("approvalForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  approvals.unshift({
+    id: Date.now(),
+    division: document.getElementById("appDivision").value,
+    title: document.getElementById("appTitle").value.trim(),
+    time: "Právě teď"
+  });
+  e.target.reset();
+  appModal.close();
+  saveAll();
 });
 
 render();
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
-      }
+  }
