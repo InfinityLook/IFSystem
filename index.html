@@ -3,131 +3,191 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#0b1120" />
   <title>InfinityLook Ops | Interní systém</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <div class="container topbar">
-      <div class="brand">
-        <div class="brand-badge">IL</div>
-        <div>
-          <h1>InfinityLook Ops</h1>
-          <span id="todayDate">Načítání data...</span>
+  <div class="app-shell">
+    <!-- Levé boční menu -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-badge">IL</div>
+          <div>
+            <div class="brand-name">InfinityLook</div>
+            <div class="brand-sub">Interní systém</div>
+          </div>
         </div>
+        <button class="icon-btn mobile-only" id="closeSidebar" aria-label="Zavřít menu">✕</button>
       </div>
-      <div class="actions">
-        <button id="themeToggle" title="Přepnout vzhled">🌓 Vzhled</button>
-        <button class="btn-primary" id="openNewModal">+ Nový záznam</button>
+
+      <nav class="nav-menu" id="navMenu">
+        <button class="nav-item active" data-section="prehled">📊 Přehled</button>
+        <button class="nav-item" data-section="podnikani">🏢 Podnikání</button>
+        <button class="nav-item" data-section="sklad">📦 Sklad</button>
+        <button class="nav-item" data-section="finance">💰 Finance</button>
+        <button class="nav-item" data-section="projekty">🗂️ Projekty</button>
+        <button class="nav-item" data-section="marketing">📣 Marketing</button>
+        <button class="nav-item" data-section="lide">👥 Lidé</button>
+        <button class="nav-item" data-section="kartoteka">📇 Kartotéka</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="nav-item" data-section="nastaveni">⚙️ Nastavení</button>
       </div>
+    </aside>
+
+    <!-- Překrytí na mobilu -->
+    <div class="backdrop" id="sidebarBackdrop"></div>
+
+    <!-- Pravá hlavní část -->
+    <div class="main-area">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn mobile-only" id="openSidebar" aria-label="Otevřít menu">☰</button>
+          <div>
+            <h1 id="pageTitle">Přehled</h1>
+            <span class="subtitle" id="todayDate">Načítání data...</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <input type="search" id="searchInput" class="search-input" placeholder="Hledat v záznamech..." />
+          <button id="themeToggle" title="Přepnout vzhled">🌓</button>
+          <button class="btn-primary" id="openNewModal">+ Nový záznam</button>
+        </div>
+      </header>
+
+      <main class="content" id="mainContent">
+        <!-- SEKCE: PŘEHLED (Hlavní stránka) -->
+        <div id="view-prehled" class="view-section">
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Aktivní provoz (Podnikání)</div>
+              <div class="kpi-value" id="kpiOps">0</div>
+              <div class="kpi-sub">Rozvoz, e-shop a aplikace</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Skladové položky</div>
+              <div class="kpi-value" id="kpiStock">0</div>
+              <div class="kpi-sub">Evidované položky a zásoby</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Finance & Uzávěrky</div>
+              <div class="kpi-value" id="kpiFinance">0</div>
+              <div class="kpi-sub">Otevřené položky k řešení</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Projekty & Úkoly</div>
+              <div class="kpi-value" id="kpiProjects">0</div>
+              <div class="kpi-sub">Rozpracované úkoly</div>
+            </div>
+          </section>
+
+          <div class="section-header">
+            <h2>Pilíře podnikání</h2>
+            <span class="muted">Rychlý přehled hlavních činností</span>
+          </div>
+          <section class="pillars-grid">
+            <div class="pillar-card" data-jump="podnikani">
+              <div class="pillar-top">
+                <strong>🍔 Rozvoz jídla</strong>
+                <span class="badge badge-live">Provoz</span>
+              </div>
+              <p>Dispečink objednávek, kurýři a denní rozvoz.</p>
+            </div>
+            <div class="pillar-card" data-jump="podnikani">
+              <div class="pillar-top">
+                <strong>🛒 E-shop</strong>
+                <span class="badge">Obchod</span>
+              </div>
+              <p>Objednávky, expedice zásilek a zákaznický servis.</p>
+            </div>
+            <div class="pillar-card" data-jump="podnikani">
+              <div class="pillar-top">
+                <strong>📱 PWA Google Play</strong>
+                <span class="badge">Aplikace</span>
+              </div>
+              <p>Správa aplikace, požadavky uživatelů a vydání.</p>
+            </div>
+            <div class="pillar-card" data-jump="podnikani">
+              <div class="pillar-top">
+                <strong>💼 Další podnikání</strong>
+                <span class="badge">Agenda</span>
+              </div>
+              <p>Ostatní živnosti, zakázky a provozní požadavky.</p>
+            </div>
+          </section>
+
+          <div class="section-header">
+            <h2>Aktuální záznamy napříč firmou</h2>
+            <div class="filters" id="overviewFilters">
+              <button class="filter-btn active" data-filter="all">Vše</button>
+              <button class="filter-btn" data-filter="podnikani">Podnikání</button>
+              <button class="filter-btn" data-filter="sklad">Sklad</button>
+              <button class="filter-btn" data-filter="finance">Finance</button>
+              <button class="filter-btn" data-filter="projekty">Projekty</button>
+            </div>
+          </div>
+          <section class="panel" id="overviewList"></section>
+        </div>
+
+        <!-- SEKCE: DETAIL JEDNOTLIVÝCH POLOŽEK MENU -->
+        <div id="view-detail" class="view-section hidden">
+          <div class="panel detail-banner">
+            <div>
+              <h2 id="detailHeading">Sekce</h2>
+              <p class="muted" id="detailSubheading">Přehled záznamů v této sekci</p>
+            </div>
+            <button class="btn-primary" id="detailAddBtn">+ Přidat sem záznam</button>
+          </div>
+          <section class="panel" id="detailList"></section>
+        </div>
+      </main>
     </div>
-  </header>
+  </div>
 
-  <main class="container">
-    <div class="section-title">Dnešní přehled</div>
-    <section class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-label">Rozvoz jídla dnes</div>
-        <div class="kpi-value" id="kpiDelivery">0 obj.</div>
-        <div class="kpi-sub">Připraveno k dispečinku</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">E-shop & Google Play</div>
-        <div class="kpi-value" id="kpiEshop">0 obj.</div>
-        <div class="kpi-sub">Čeká na vyřízení</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Další podnikání</div>
-        <div class="kpi-value" id="kpiOther">0 úkolů</div>
-        <div class="kpi-sub">Aktivní agenda</div>
-      </div>
-    </section>
-
-    <div class="section-title">Moduly podnikání</div>
-    <section class="modules-grid">
-      <div class="module-card" data-filter="rozvoz">
-        <div class="module-header">
-          <span class="module-title">🍔 Rozvoz jídla</span>
-          <span class="pill">Provoz</span>
-        </div>
-        <div class="module-desc">Objednávky rozvozu, přiřazení kurýra, stavy doručení a denní přehled.</div>
-      </div>
-
-      <div class="module-card" data-filter="eshop">
-        <div class="module-header">
-          <span class="module-title">📦 E-shop</span>
-          <span class="pill">Obchod</span>
-        </div>
-        <div class="module-desc">Přijaté objednávky, expedice balíků, sklad a vratky.</div>
-      </div>
-
-      <div class="module-card" data-filter="play">
-        <div class="module-header">
-          <span class="module-title">📱 PWA Google Play</span>
-          <span class="pill">Aplikace</span>
-        </div>
-        <div class="module-desc">Požadavky z aplikace, zpětná vazba uživatelů a vydávání verzí.</div>
-      </div>
-
-      <div class="module-card" data-filter="ostatni">
-        <div class="module-header">
-          <span class="module-title">🗂️ Další podnikání</span>
-          <span class="pill">Agenda</span>
-        </div>
-        <div class="module-desc">Zakázky, termíny, doklady a provozní poznámky dalších živností.</div>
-      </div>
-    </section>
-
-    <div class="section-title">Co teď hoří / Aktivní položky</div>
-    <section class="list-box">
-      <div class="list-header">
-        <strong>Přehled záznamů</strong>
-        <div class="filters">
-          <button class="filter-btn active" data-filter="all">Vše</button>
-          <button class="filter-btn" data-filter="rozvoz">Rozvoz</button>
-          <button class="filter-btn" data-filter="eshop">E-shop</button>
-          <button class="filter-btn" data-filter="play">Google Play</button>
-          <button class="filter-btn" data-filter="ostatni">Ostatní</button>
-        </div>
-      </div>
-      <div id="itemsList"></div>
-    </section>
-  </main>
-
+  <!-- Modální okno pro nový záznam -->
   <dialog id="newModal">
     <form id="newItemForm">
       <h3 class="modal-title">Nový interní záznam</h3>
       <div class="form-group">
-        <label for="itemModule">Modul</label>
-        <select id="itemModule" required>
-          <option value="rozvoz">Rozvoz jídla</option>
-          <option value="eshop">E-shop</option>
-          <option value="play">PWA Google Play</option>
-          <option value="ostatni">Další podnikání</option>
+        <label for="itemSection">Sekce menu</label>
+        <select id="itemSection" required>
+          <option value="podnikani">Podnikání</option>
+          <option value="sklad">Sklad</option>
+          <option value="finance">Finance</option>
+          <option value="projekty">Projekty</option>
+          <option value="marketing">Marketing</option>
+          <option value="lide">Lidé</option>
+          <option value="kartoteka">Kartotéka</option>
+          <option value="nastaveni">Nastavení</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="itemTitle">Název / číslo objednávky</label>
-        <input id="itemTitle" type="text" placeholder="Např. Objednávka #105 – Ulice Krátká" required />
+        <label for="itemTag">Podoblast / Štítek</label>
+        <input id="itemTag" type="text" placeholder="Např. Rozvoz jídla, E-shop, Surovina, Dodavatel..." />
+      </div>
+      <div class="form-group">
+        <label for="itemTitle">Název záznamu</label>
+        <input id="itemTitle" type="text" placeholder="Např. Objednávka #108 – Dvořákova 12" required />
       </div>
       <div class="form-group">
         <label for="itemStatus">Stav</label>
         <select id="itemStatus">
           <option value="urgent">Urgentní / Nové</option>
-          <option value="progress">Rozpracováno / Na cestě</option>
+          <option value="progress">V řešení</option>
           <option value="done">Hotovo</option>
         </select>
       </div>
       <div class="modal-actions">
         <button type="button" id="closeModal">Zrušit</button>
-        <button type="submit" class="btn-primary">Uložit</button>
+        <button type="submit" class="btn-primary">Uložit záznam</button>
       </div>
     </form>
   </dialog>
 
   <script src="app.js"></script>
 </body>
-  </html>
-  
+</html>
