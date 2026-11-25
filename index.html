@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="cs" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>InfinityLook Ops | Interní systém</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="container topbar">
+      <div class="brand">
+        <div class="brand-badge">IL</div>
+        <div>
+          <h1>InfinityLook Ops</h1>
+          <span id="todayDate">Načítání data...</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="themeToggle" title="Přepnout vzhled">🌓 Vzhled</button>
+        <button class="btn-primary" id="openNewModal">+ Nový záznam</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="section-title">Dnešní přehled</div>
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Rozvoz jídla dnes</div>
+        <div class="kpi-value" id="kpiDelivery">0 obj.</div>
+        <div class="kpi-sub">Připraveno k dispečinku</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">E-shop & Google Play</div>
+        <div class="kpi-value" id="kpiEshop">0 obj.</div>
+        <div class="kpi-sub">Čeká na vyřízení</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Další podnikání</div>
+        <div class="kpi-value" id="kpiOther">0 úkolů</div>
+        <div class="kpi-sub">Aktivní agenda</div>
+      </div>
+    </section>
+
+    <div class="section-title">Moduly podnikání</div>
+    <section class="modules-grid">
+      <div class="module-card" data-filter="rozvoz">
+        <div class="module-header">
+          <span class="module-title">🍔 Rozvoz jídla</span>
+          <span class="pill">Provoz</span>
+        </div>
+        <div class="module-desc">Objednávky rozvozu, přiřazení kurýra, stavy doručení a denní přehled.</div>
+      </div>
+
+      <div class="module-card" data-filter="eshop">
+        <div class="module-header">
+          <span class="module-title">📦 E-shop</span>
+          <span class="pill">Obchod</span>
+        </div>
+        <div class="module-desc">Přijaté objednávky, expedice balíků, sklad a vratky.</div>
+      </div>
+
+      <div class="module-card" data-filter="play">
+        <div class="module-header">
+          <span class="module-title">📱 PWA Google Play</span>
+          <span class="pill">Aplikace</span>
+        </div>
+        <div class="module-desc">Požadavky z aplikace, zpětná vazba uživatelů a vydávání verzí.</div>
+      </div>
+
+      <div class="module-card" data-filter="ostatni">
+        <div class="module-header">
+          <span class="module-title">🗂️ Další podnikání</span>
+          <span class="pill">Agenda</span>
+        </div>
+        <div class="module-desc">Zakázky, termíny, doklady a provozní poznámky dalších živností.</div>
+      </div>
+    </section>
+
+    <div class="section-title">Co teď hoří / Aktivní položky</div>
+    <section class="list-box">
+      <div class="list-header">
+        <strong>Přehled záznamů</strong>
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">Vše</button>
+          <button class="filter-btn" data-filter="rozvoz">Rozvoz</button>
+          <button class="filter-btn" data-filter="eshop">E-shop</button>
+          <button class="filter-btn" data-filter="play">Google Play</button>
+          <button class="filter-btn" data-filter="ostatni">Ostatní</button>
+        </div>
+      </div>
+      <div id="itemsList"></div>
+    </section>
+  </main>
+
+  <dialog id="newModal">
+    <form id="newItemForm">
+      <h3 class="modal-title">Nový interní záznam</h3>
+      <div class="form-group">
+        <label for="itemModule">Modul</label>
+        <select id="itemModule" required>
+          <option value="rozvoz">Rozvoz jídla</option>
+          <option value="eshop">E-shop</option>
+          <option value="play">PWA Google Play</option>
+          <option value="ostatni">Další podnikání</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="itemTitle">Název / číslo objednávky</label>
+        <input id="itemTitle" type="text" placeholder="Např. Objednávka #105 – Ulice Krátká" required />
+      </div>
+      <div class="form-group">
+        <label for="itemStatus">Stav</label>
+        <select id="itemStatus">
+          <option value="urgent">Urgentní / Nové</option>
+          <option value="progress">Rozpracováno / Na cestě</option>
+          <option value="done">Hotovo</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="closeModal">Zrušit</button>
+        <button type="submit" class="btn-primary">Uložit</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+  </html>
+  
