@@ -1,7 +1,7 @@
 const sectionInfo = {
   prehled: { title: "Přehled", desc: "Ředitelský přehled výkonnosti a divizí" },
   podnikani: { title: "Podnikání", desc: "Řízení divizí: Rozvoz jídla, E-shop, PWA Google Play a další činnosti" },
-  sklad: { title: "Sklad", desc: "Zásoby, suroviny, obaly a logistika" },
+  sklad: { title: "Sklad", desc: "Evidence zásob, minimální limity, pohyby a auditní historie" },
   finance: { title: "Finance", desc: "Výnosy, náklady, uzávěrky a schvalování rozpočtů" },
   projekty: { title: "Projekty", desc: "Strategické iniciativy a rozvojové projekty" },
   marketing: { title: "Marketing", desc: "Akvizice zákazníků, kampaně a prezentace značek" },
@@ -45,7 +45,7 @@ document.getElementById("openSidebar").addEventListener("click", () => {
 document.getElementById("closeSidebar").addEventListener("click", closeMobileMenu);
 backdrop.addEventListener("click", closeMobileMenu);
 
-// Data divizí pro Divizní matici
+// Data divizí
 const divisionsData = [
   {
     name: "Rozvoz jídla",
@@ -85,24 +85,24 @@ const divisionsData = [
   }
 ];
 
-// Položky ke schválení vedením
 const defaultApprovals = [
   { id: 101, division: "Rozvoz jídla", title: "Doplnění obalového materiálu (6 400 Kč)", time: "Dnes" },
-  { id: 102, division: "PWA Google Play", title: "Vydání nové produkční verze aplikace", time: "Dnes" },
-  { id: 103, division: "E-shop", title: "Úprava smluvních podmínek dopravce", time: "Včera" }
+  { id: 102, division: "PWA Google Play", title: "Vydání nové produkční verze aplikace", time: "Dnes" }
 ];
 
-// Záznamy pro ostatní sekce menu
 const defaultItems = [
   { id: 1, section: "podnikani", tag: "Rozvoz jídla", title: "Denní provozní přehled směn a kurýrů", status: "progress" },
-  { id: 2, section: "sklad", tag: "Zásoby", title: "Kontrola minimálních stavů obalů a surovin", status: "urgent" },
-  { id: 3, section: "finance", tag: "Reporting", title: "Měsíční konsolidace tržeb po divizích", status: "progress" },
-  { id: 4, section: "projekty", tag: "Infrastruktura", title: "Napojení interního portálu na centrální databázi", status: "progress" }
+  { id: 2, section: "finance", tag: "Reporting", title: "Měsíční konsolidace tržeb po divizích", status: "progress" },
+  { id: 3, section: "projekty", tag: "Infrastruktura", title: "Napojení interního portálu na centrální databázi", status: "progress" }
 ];
 
 let approvals = JSON.parse(localStorage.getItem("il_exec_approvals")) || defaultApprovals;
 let items = JSON.parse(localStorage.getItem("il_ops_items")) || defaultItems;
 let activeSection = "prehled";
+
+function formatCzk(num) {
+  return `${Math.round(num).toLocaleString("cs-CZ")} Kč`;
+}
 
 function saveAll() {
   localStorage.setItem("il_exec_approvals", JSON.stringify(approvals));
@@ -111,13 +111,18 @@ function saveAll() {
 }
 
 function renderOverview() {
-  // Počet položek ke schválení v KPI
   const pendingCount = approvals.length;
   document.getElementById("kpiPending").textContent = pendingCount;
   document.getElementById("kpiPendingBadge").textContent =
     pendingCount === 1 ? "1 položka" : `${pendingCount} položek`;
 
-  // Divizní matice
+  if (window.SkladModule && typeof window.SkladModule.getSummary === "function") {
+    const stockSummary = window.SkladModule.getSummary();
+    document.getElementById("kpiOverviewStockVal").textContent = formatCzk(stockSummary.totalValue);
+    document.getElementById("kpiStockAlertsBadge").textContent =
+      stockSummary.lowCount === 0 ? "Vše v pořádku" : `${stockSummary.lowCount} pod limitem`;
+  }
+
   const tbody = document.getElementById("divisionsTableBody");
   tbody.innerHTML = divisionsData.map((d) => `
     <tr data-jump="podnikani">
@@ -134,7 +139,6 @@ function renderOverview() {
     </tr>
   `).join("");
 
-  // Ke schválení vedením
   const appList = document.getElementById("approvalsList");
   if (!approvals.length) {
     appList.innerHTML = `<div class="approval-item"><span class="muted">Žádné otevřené položky ke schválení.</span></div>`;
@@ -182,7 +186,9 @@ function renderDetail() {
 
 function render() {
   renderOverview();
-  if (activeSection !== "prehled") {
+  if (activeSection === "sklad" && window.SkladModule) {
+    window.SkladModule.render();
+  } else if (activeSection !== "prehled") {
     renderDetail();
   }
 }
@@ -197,11 +203,14 @@ function switchSection(section) {
   document.getElementById("pageTitle").textContent = info.title;
   document.getElementById("crumbCurrent").textContent = info.title;
 
-  const isOverview = section === "prehled";
-  document.getElementById("view-prehled").classList.toggle("hidden", !isOverview);
-  document.getElementById("view-detail").classList.toggle("hidden", isOverview);
+  document.getElementById("view-prehled").classList.toggle("hidden", section !== "prehled");
+  document.getElementById("view-sklad").classList.toggle("hidden", section !== "sklad");
+  document.getElementById("view-detail").classList.toggle(
+    "hidden",
+    section === "prehled" || section === "sklad"
+  );
 
-  if (!isOverview) {
+  if (section !== "prehled" && section !== "sklad") {
     document.getElementById("detailHeading").textContent = info.title;
     document.getElementById("detailSubheading").textContent = info.desc;
   }
@@ -210,12 +219,10 @@ function switchSection(section) {
   render();
 }
 
-// Navigace v menu
 document.querySelectorAll(".nav-item").forEach((btn) => {
   btn.addEventListener("click", () => switchSection(btn.dataset.section));
 });
 
-// Prokliky z Přehledu do divizí
 document.getElementById("mainContent").addEventListener("click", (e) => {
   const jumpEl = e.target.closest("[data-jump]");
   if (jumpEl) {
@@ -243,11 +250,11 @@ document.getElementById("mainContent").addEventListener("click", (e) => {
   }
 });
 
-// Modal: Nový záznam
+// Modal: Nový záznam do sekcí
 const modal = document.getElementById("newModal");
 
 function openModalWithSection(defaultSec) {
-  if (defaultSec && defaultSec !== "prehled") {
+  if (defaultSec && defaultSec !== "prehled" && defaultSec !== "sklad") {
     document.getElementById("itemSection").value = defaultSec;
   }
   modal.showModal();
@@ -289,8 +296,17 @@ document.getElementById("approvalForm").addEventListener("submit", (e) => {
   saveAll();
 });
 
+window.PortalApp = {
+  onDataChanged: () => renderOverview(),
+  addApproval: ({ division, title, time }) => {
+    approvals.unshift({ id: Date.now(), division, title, time: time || "Právě teď" });
+    saveAll();
+  }
+};
+
 render();
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
-  }
+                                      }
+  
