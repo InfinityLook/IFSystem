@@ -7,6 +7,7 @@
   <title>InfinityLook | Executive Portal</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="sklad.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -63,7 +64,6 @@
       <main class="content" id="mainContent">
         <!-- HLAVNÍ STRÁNKA: ŘEDITELSKÝ PŘEHLED + DIVIZNÍ ŘÍZENÍ -->
         <div id="view-prehled" class="view-section">
-          <!-- Horní řada: Executive KPI -->
           <section class="kpi-grid">
             <div class="kpi-card">
               <div class="kpi-top">
@@ -85,11 +85,11 @@
 
             <div class="kpi-card">
               <div class="kpi-top">
-                <span class="kpi-label">Provozní náklady / marže</span>
-                <span class="trend trend-neutral">Stabilní</span>
+                <span class="kpi-label">Hodnota skladu</span>
+                <span class="trend trend-neutral" id="kpiStockAlertsBadge">0 pod limitem</span>
               </div>
-              <div class="kpi-value" id="kpiMargin">34,6 %</div>
-              <div class="kpi-sub">Průběžná čistá provozní marže</div>
+              <div class="kpi-value" id="kpiOverviewStockVal">0 Kč</div>
+              <div class="kpi-sub">Aktuální skladová hodnota</div>
             </div>
 
             <div class="kpi-card">
@@ -102,9 +102,7 @@
             </div>
           </section>
 
-          <!-- Hlavní dvou-sloupcové rozložení -->
           <section class="exec-grid">
-            <!-- Vlevo (70 %): Divizní matice -->
             <div class="panel">
               <div class="panel-header">
                 <div>
@@ -130,7 +128,6 @@
               </div>
             </div>
 
-            <!-- Vpravo (30 %): Ke schválení / Rozhodnutí vedení -->
             <div class="panel">
               <div class="panel-header">
                 <div>
@@ -142,6 +139,107 @@
 
               <div id="approvalsList" class="approvals-list"></div>
             </div>
+          </section>
+        </div>
+
+        <!-- MODUL: SKLAD -->
+        <div id="view-sklad" class="view-section hidden">
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Položek v evidenci</span>
+                <span class="trend trend-neutral">SKU</span>
+              </div>
+              <div class="kpi-value" id="stockKpiTotal">0</div>
+              <div class="kpi-sub">Aktivní skladové karty</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Pod minimem / Vyprodáno</span>
+                <span class="trend trend-warn">Pozor</span>
+              </div>
+              <div class="kpi-value" id="stockKpiLow">0</div>
+              <div class="kpi-sub">Vyžaduje doplnění zásob</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Hodnota zásob</span>
+                <span class="trend trend-up">Aktuální</span>
+              </div>
+              <div class="kpi-value" id="stockKpiValue">0 Kč</div>
+              <div class="kpi-sub">Dle jednotkové ceny položek</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Pohybů v deníku</span>
+                <span class="trend trend-neutral">Audit</span>
+              </div>
+              <div class="kpi-value" id="stockKpiMovements">0</div>
+              <div class="kpi-sub">Příjmy, výdeje a odpisy</div>
+            </div>
+          </section>
+
+          <div class="panel toolbar-panel">
+            <div class="toolbar-filters">
+              <select id="stockDivisionFilter" aria-label="Filtrovat podle divize">
+                <option value="all">Všechny divize</option>
+                <option value="Rozvoz jídla">Rozvoz jídla</option>
+                <option value="E-shop">E-shop</option>
+                <option value="PWA Google Play">PWA Google Play</option>
+                <option value="Další podnikání">Další podnikání</option>
+              </select>
+
+              <select id="stockStatusFilter" aria-label="Filtrovat podle stavu zásoby">
+                <option value="all">Všechny stavy</option>
+                <option value="low">Pod minimem / Vyprodáno</option>
+                <option value="ok">V pořádku</option>
+              </select>
+
+              <input type="search" id="stockSearch" class="inline-search" placeholder="Hledat SKU nebo název..." />
+            </div>
+
+            <div class="toolbar-actions">
+              <button id="openMovementModal">± Pohyb zásob</button>
+              <button class="btn-primary" id="openStockItemModal">+ Nová položka</button>
+            </div>
+          </div>
+
+          <section class="panel" style="margin-bottom: 1.25rem;">
+            <div class="panel-header">
+              <div>
+                <h2>Skladové zásoby</h2>
+                <p class="muted">Přehled stavů, minimálních limitů, hodnoty a rychlých akcí</p>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table class="corp-table">
+                <thead>
+                  <tr>
+                    <th>Položka & SKU</th>
+                    <th>Divize</th>
+                    <th>Zásoba / Min.</th>
+                    <th>Stav</th>
+                    <th>Hodnota</th>
+                    <th>Akce</th>
+                  </tr>
+                </thead>
+                <tbody id="stockTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Deník skladových pohybů</h2>
+                <p class="muted">Auditní historie příjmů, výdejů, odpisů a úprav množství</p>
+              </div>
+            </div>
+            <div id="stockMovementsList" class="movements-list"></div>
           </section>
         </div>
 
@@ -225,7 +323,107 @@
     </form>
   </dialog>
 
+  <!-- Modal: Nová skladová položka -->
+  <dialog id="stockItemModal">
+    <form id="stockItemForm">
+      <h3 class="modal-title">Nová skladová položka</h3>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="stSku">Kód / SKU</label>
+          <input id="stSku" type="text" placeholder="Např. ROZ-BOX-01" required />
+        </div>
+        <div class="form-group">
+          <label for="stDivision">Divize</label>
+          <select id="stDivision">
+            <option value="Rozvoz jídla">Rozvoz jídla</option>
+            <option value="E-shop">E-shop</option>
+            <option value="PWA Google Play">PWA Google Play</option>
+            <option value="Další podnikání">Další podnikání</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="stName">Název položky</label>
+        <input id="stName" type="text" placeholder="Např. Termo obal na jídlo 500 ml" required />
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="stLocation">Lokace / Kategorie</label>
+          <input id="stLocation" type="text" placeholder="Např. Regál A2 • Obaly" />
+        </div>
+        <div class="form-group">
+          <label for="stUnit">Jednotka</label>
+          <select id="stUnit">
+            <option value="ks">ks</option>
+            <option value="bal.">bal.</option>
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="l">l</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="stQty">Počáteční zásoba</label>
+          <input id="stQty" type="number" step="0.01" min="0" value="0" required />
+        </div>
+        <div class="form-group">
+          <label for="stMin">Min. limit</label>
+          <input id="stMin" type="number" step="0.01" min="0" value="10" required />
+        </div>
+        <div class="form-group">
+          <label for="stPrice">Cena / jedn. (Kč)</label>
+          <input id="stPrice" type="number" step="0.01" min="0" value="0" required />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="closeStockItemModal">Zrušit</button>
+        <button type="submit" class="btn-primary">Uložit položku</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: Pohyb zásob (Příjem / Výdej / Odpis) -->
+  <dialog id="movementModal">
+    <form id="movementForm">
+      <h3 class="modal-title">Zapsat pohyb zásob</h3>
+      <div class="form-group">
+        <label for="mvItem">Skladová položka</label>
+        <select id="mvItem" required></select>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="mvType">Typ pohybu</label>
+          <select id="mvType">
+            <option value="in">Příjem na sklad (+)</option>
+            <option value="out">Výdej ze skladu (-)</option>
+            <option value="waste">Odpis / znehodnocení (-)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="mvQty">Množství</label>
+          <input id="mvQty" type="number" step="0.01" min="0.01" value="1" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="mvReason">Důvod / Poznámka</label>
+        <input id="mvReason" type="text" placeholder="Např. Závoz dodavatele, Expedice objednávek..." />
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="closeMovementModal">Zrušit</button>
+        <button type="submit" class="btn-primary">Potvrdit pohyb</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="app.js"></script>
+  <script src="sklad.js"></script>
 </body>
-              </html>
-              
+</html>
