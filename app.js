@@ -1,8 +1,8 @@
 const sectionInfo = {
   prehled: { title: "Přehled", desc: "Ředitelský přehled výkonnosti a divizí" },
   podnikani: { title: "Podnikání", desc: "Seznam odvětví a druhů podnikání" },
-  sklad: { title: "Sklad", desc: "Evidence zásob, minimální limity, pohyby a auditní historie" },
-  finance: { title: "Finance", desc: "Výnosy, náklady, uzávěrky a schvalování rozpočtů" },
+  sklad: { title: "Sklad", desc: "Přehledné menu zásob podle odvětví" },
+  finance: { title: "Finance", desc: "Příjmy, výdaje, bilance po odvětvích a finanční přehled" },
   projekty: { title: "Projekty", desc: "Strategické iniciativy a rozvojové projekty" },
   marketing: { title: "Marketing", desc: "Akvizice zákazníků, kampaně a prezentace značek" },
   lide: { title: "Lidé", desc: "Organizační struktura, role, směny a kurýři" },
@@ -87,8 +87,7 @@ const defaultApprovals = [
 ];
 
 const defaultItems = [
-  { id: 1, section: "finance", tag: "Reporting", title: "Měsíční konsolidace tržeb po divizích", status: "progress" },
-  { id: 2, section: "projekty", tag: "Infrastruktura", title: "Napojení interního portálu na centrální databázi", status: "progress" }
+  { id: 1, section: "projekty", tag: "Infrastruktura", title: "Napojení interního portálu na centrální databázi", status: "progress" }
 ];
 
 let approvals = JSON.parse(localStorage.getItem("il_exec_approvals")) || defaultApprovals;
@@ -110,6 +109,13 @@ function renderOverview() {
   document.getElementById("kpiPending").textContent = pendingCount;
   document.getElementById("kpiPendingBadge").textContent =
     pendingCount === 1 ? "1 položka" : `${pendingCount} položek`;
+
+  if (window.FinanceModule && typeof window.FinanceModule.getSummary === "function") {
+    const finSummary = window.FinanceModule.getSummary();
+    const sign = finSummary.net > 0 ? "+" : "";
+    document.getElementById("kpiRevenue").textContent = `${sign}${formatCzk(finSummary.net)}`;
+    document.getElementById("kpiFinMarginBadge").textContent = `Marže ${finSummary.marginPct} %`;
+  }
 
   if (window.SkladModule && typeof window.SkladModule.getSummary === "function") {
     const stockSummary = window.SkladModule.getSummary();
@@ -196,6 +202,8 @@ function render() {
     window.SkladModule.render();
   } else if (activeSection === "podnikani" && window.PodnikaniModule) {
     window.PodnikaniModule.render();
+  } else if (activeSection === "finance" && window.FinanceModule) {
+    window.FinanceModule.render();
   } else if (activeSection !== "prehled") {
     renderDetail();
   }
@@ -211,10 +219,12 @@ function switchSection(section) {
   document.getElementById("pageTitle").textContent = info.title;
   document.getElementById("crumbCurrent").textContent = info.title;
 
-  const isCustomModule = section === "podnikani" || section === "sklad";
+  const isCustomModule =
+    section === "podnikani" || section === "sklad" || section === "finance";
   document.getElementById("view-prehled").classList.toggle("hidden", section !== "prehled");
   document.getElementById("view-podnikani").classList.toggle("hidden", section !== "podnikani");
   document.getElementById("view-sklad").classList.toggle("hidden", section !== "sklad");
+  document.getElementById("view-finance").classList.toggle("hidden", section !== "finance");
   document.getElementById("view-detail").classList.toggle("hidden", section === "prehled" || isCustomModule);
 
   if (section !== "prehled" && !isCustomModule) {
@@ -260,7 +270,13 @@ document.getElementById("mainContent").addEventListener("click", (e) => {
 const modal = document.getElementById("newModal");
 
 function openModalWithSection(defaultSec) {
-  if (defaultSec && defaultSec !== "prehled" && defaultSec !== "podnikani" && defaultSec !== "sklad") {
+  if (
+    defaultSec &&
+    defaultSec !== "prehled" &&
+    defaultSec !== "podnikani" &&
+    defaultSec !== "sklad" &&
+    defaultSec !== "finance"
+  ) {
     document.getElementById("itemSection").value = defaultSec;
   }
   modal.showModal();
