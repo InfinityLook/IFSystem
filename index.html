@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="sklad.css" />
   <link rel="stylesheet" href="podnikani.css" />
+  <link rel="stylesheet" href="finance.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -68,11 +69,11 @@
           <section class="kpi-grid">
             <div class="kpi-card">
               <div class="kpi-top">
-                <span class="kpi-label">Denní objem skupiny</span>
-                <span class="trend trend-up">+8,4 %</span>
+                <span class="kpi-label">Čistá finanční bilance</span>
+                <span class="trend trend-up" id="kpiFinMarginBadge">0 %</span>
               </div>
-              <div class="kpi-value" id="kpiRevenue">24 850 Kč</div>
-              <div class="kpi-sub">Souhrn napříč aktivními divizemi</div>
+              <div class="kpi-value" id="kpiRevenue">0 Kč</div>
+              <div class="kpi-sub">Příjmy mínus výdaje z modulu Finance</div>
             </div>
 
             <div class="kpi-card">
@@ -110,7 +111,7 @@
                   <h2>Divizní matice</h2>
                   <p class="muted">Výkonnost a provozní stav jednotlivých podnikatelských divizí</p>
                 </div>
-                <button class="btn-ghost" data-jump="podnikani">Otevřít divize →</button>
+                <button class="btn-ghost" data-jump="podnikani">Otevřít odvětví →</button>
               </div>
 
               <div class="table-wrap">
@@ -300,6 +301,134 @@
           </section>
         </div>
 
+        <!-- MODUL: FINANCE -->
+        <div id="view-finance" class="view-section hidden">
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Příjmy celkem</span>
+                <span class="trend trend-up">+</span>
+              </div>
+              <div class="kpi-value fin-net-pos" id="finKpiIncome">0 Kč</div>
+              <div class="kpi-sub">Zapsané příjmy napříč odvětvími</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Výdaje celkem</span>
+                <span class="trend trend-warn">-</span>
+              </div>
+              <div class="kpi-value fin-net-neg" id="finKpiExpense">0 Kč</div>
+              <div class="kpi-sub">Zapsané náklady a výdaje</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Čistá bilance</span>
+                <span class="trend trend-neutral">Výsledek</span>
+              </div>
+              <div class="kpi-value" id="finKpiNet">0 Kč</div>
+              <div class="kpi-sub">Rozdíl příjmů a výdajů</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Finanční marže</span>
+                <span class="trend trend-up">Podíl</span>
+              </div>
+              <div class="kpi-value" id="finKpiMargin">0 %</div>
+              <div class="kpi-sub" id="finStockValueHint">Hodnota zásob ve skladu: 0 Kč</div>
+            </div>
+          </section>
+
+          <section class="panel fin-form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Zapsat finanční transakci</h2>
+                <p class="muted">Přidej příjem nebo výdaj a přiřaď ho k odvětví z modulu Podnikání</p>
+              </div>
+            </div>
+
+            <form id="finAddForm" class="fin-form-body">
+              <div class="fin-form-grid">
+                <div class="form-group">
+                  <label for="finTypeInput">Typ</label>
+                  <select id="finTypeInput">
+                    <option value="income">Příjem (+)</option>
+                    <option value="expense">Výdaj (-)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="finAmountInput">Částka (Kč)</label>
+                  <input id="finAmountInput" type="number" step="0.01" min="0.01" placeholder="Např. 12500" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="finBranchInput">Odvětví</label>
+                  <select id="finBranchInput"></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="finCategoryInput">Kategorie</label>
+                  <input id="finCategoryInput" type="text" placeholder="Např. Tržby, Obaly, Marketing..." />
+                </div>
+
+                <div class="form-group">
+                  <label for="finTitleInput">Popis položky</label>
+                  <input id="finTitleInput" type="text" placeholder="Např. Denní uzávěrka nebo faktura..." required />
+                </div>
+
+                <div class="form-group">
+                  <label for="finDateInput">Datum</label>
+                  <input id="finDateInput" type="date" />
+                </div>
+
+                <button type="submit" class="btn-primary">+ Zapsat</button>
+              </div>
+            </form>
+          </section>
+
+          <div class="panel toolbar-panel">
+            <div class="toolbar-filters">
+              <select id="finTypeFilter" aria-label="Filtrovat podle typu transakce">
+                <option value="all">Všechny typy</option>
+                <option value="income">Pouze příjmy</option>
+                <option value="expense">Pouze výdaje</option>
+              </select>
+
+              <select id="finBranchFilter" aria-label="Filtrovat podle odvětví">
+                <option value="all">Všechna odvětví</option>
+              </select>
+
+              <input type="search" id="finSearch" class="inline-search" placeholder="Hledat popis nebo kategorii..." />
+            </div>
+          </div>
+
+          <section class="fin-layout-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Přehled transakcí</h2>
+                  <p class="muted">Chronologický seznam příjmů a výdajů</p>
+                </div>
+                <span class="trend trend-neutral" id="finTxCountBadge">0 položek</span>
+              </div>
+              <div id="finTransactionsList" class="fin-tx-list"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Bilance podle odvětví</h2>
+                  <p class="muted">Příjmy, výdaje a čistý výsledek po oborech</p>
+                </div>
+              </div>
+              <div id="finBranchBreakdown" class="fin-branch-breakdown"></div>
+            </div>
+          </section>
+        </div>
+
         <!-- DETAIL OSTATNÍCH POLOŽEK MENU -->
         <div id="view-detail" class="view-section hidden">
           <div class="panel detail-banner">
@@ -383,5 +512,6 @@
   <script src="app.js"></script>
   <script src="podnikani.js"></script>
   <script src="sklad.js"></script>
+  <script src="finance.js"></script>
 </body>
 </html>
