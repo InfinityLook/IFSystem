@@ -1,0 +1,99 @@
+.biz-form-panel {
+  margin-bottom: 1.25rem;
+}
+
+.biz-form-body {
+  padding: 1.1rem 1.25rem;
+}
+
+.biz-form-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1.6fr auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.biz-form-grid .form-group {
+  margin-bottom: 0;
+}
+
+.biz-empty {
+  padding: 2.25rem 1.25rem;
+  text-align: center;
+}
+
+.biz-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.biz-row {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.biz-row:last-child {
+  border-bottom: none;
+}
+
+.biz-info {
+  min-width: 200px;
+  flex: 1;
+}
+
+.biz-name {
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+
+.biz-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.biz-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.24rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tag-aktivni {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.tag-pripravuje-se {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.tag-pauza {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.biz-status-select {
+  padding: 0.34rem 0.55rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 900px) {
+  .biz-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
