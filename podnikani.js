@@ -17,9 +17,16 @@
       .replace(/"/g, "&quot;");
   }
 
+  function getBranches() {
+    return odvetvi.map((item) => item.nazev);
+  }
+
   function uloz() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(odvetvi));
     render();
+    if (window.SkladModule && typeof window.SkladModule.render === "function") {
+      window.SkladModule.render();
+    }
   }
 
   function render() {
@@ -123,6 +130,7 @@
   render();
 
   window.PodnikaniModule = {
-    render
+    render,
+    getBranches
   };
 })();
