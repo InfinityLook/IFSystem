@@ -8,6 +8,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="sklad.css" />
+  <link rel="stylesheet" href="podnikani.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -139,6 +140,55 @@
 
               <div id="approvalsList" class="approvals-list"></div>
             </div>
+          </section>
+        </div>
+
+        <!-- MODUL: PODNIKÁNÍ -->
+        <div id="view-podnikani" class="view-section hidden">
+          <section class="panel biz-form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Přidat odvětví / druh podnikání</h2>
+                <p class="muted">Zadej obor, ve kterém se rozhodneš podnikat, a vyber tag</p>
+              </div>
+            </div>
+
+            <form id="bizAddForm" class="biz-form-body">
+              <div class="biz-form-grid">
+                <div class="form-group">
+                  <label for="bizNazevInput">Druh podnikání / odvětví</label>
+                  <input id="bizNazevInput" type="text" placeholder="Např. E-shop, Rozvoz jídla, Aplikace..." required />
+                </div>
+
+                <div class="form-group">
+                  <label for="bizStavSelect">Tag</label>
+                  <select id="bizStavSelect">
+                    <option value="aktivni">Aktivní</option>
+                    <option value="pripravuje-se">Připravuje se</option>
+                    <option value="pauza">Pauza</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="bizPoznamkaInput">Poznámka (volitelné)</label>
+                  <input id="bizPoznamkaInput" type="text" placeholder="Krátká poznámka k oboru..." />
+                </div>
+
+                <button type="submit" class="btn-primary">+ Přidat</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Seznam odvětví</h2>
+                <p class="muted">Přehled zvolených odvětví a jejich aktuálních tagů</p>
+              </div>
+              <span class="trend trend-neutral" id="bizCountBadge">0 odvětví</span>
+            </div>
+
+            <div id="bizOdvetviList" class="biz-list"></div>
           </section>
         </div>
 
@@ -425,5 +475,6 @@
 
   <script src="app.js"></script>
   <script src="sklad.js"></script>
+  <script src="podnikani.js"></script>
 </body>
 </html>
