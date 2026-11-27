@@ -1,6 +1,6 @@
 const sectionInfo = {
   prehled: { title: "Přehled", desc: "Ředitelský přehled výkonnosti a divizí" },
-  podnikani: { title: "Podnikání", desc: "Řízení divizí: Rozvoz jídla, E-shop, PWA Google Play a další činnosti" },
+  podnikani: { title: "Podnikání", desc: "Seznam odvětví a druhů podnikání" },
   sklad: { title: "Sklad", desc: "Evidence zásob, minimální limity, pohyby a auditní historie" },
   finance: { title: "Finance", desc: "Výnosy, náklady, uzávěrky a schvalování rozpočtů" },
   projekty: { title: "Projekty", desc: "Strategické iniciativy a rozvojové projekty" },
@@ -10,14 +10,12 @@ const sectionInfo = {
   nastaveni: { title: "Nastavení", desc: "Systémová konfigurace, oprávnění a integrace" }
 };
 
-// Datum v horní liště
 document.getElementById("todayDate").textContent = new Date().toLocaleDateString("cs-CZ", {
   day: "numeric",
   month: "long",
   year: "numeric"
 });
 
-// Tmavý / světlý režim
 const root = document.documentElement;
 const savedTheme = localStorage.getItem("il_theme") || "dark";
 root.setAttribute("data-theme", savedTheme);
@@ -28,7 +26,6 @@ document.getElementById("themeToggle").addEventListener("click", () => {
   localStorage.setItem("il_theme", next);
 });
 
-// Mobilní boční menu
 const sidebar = document.getElementById("sidebar");
 const backdrop = document.getElementById("sidebarBackdrop");
 
@@ -45,7 +42,6 @@ document.getElementById("openSidebar").addEventListener("click", () => {
 document.getElementById("closeSidebar").addEventListener("click", closeMobileMenu);
 backdrop.addEventListener("click", closeMobileMenu);
 
-// Data divizí
 const divisionsData = [
   {
     name: "Rozvoz jídla",
@@ -91,9 +87,8 @@ const defaultApprovals = [
 ];
 
 const defaultItems = [
-  { id: 1, section: "podnikani", tag: "Rozvoz jídla", title: "Denní provozní přehled směn a kurýrů", status: "progress" },
-  { id: 2, section: "finance", tag: "Reporting", title: "Měsíční konsolidace tržeb po divizích", status: "progress" },
-  { id: 3, section: "projekty", tag: "Infrastruktura", title: "Napojení interního portálu na centrální databázi", status: "progress" }
+  { id: 1, section: "finance", tag: "Reporting", title: "Měsíční konsolidace tržeb po divizích", status: "progress" },
+  { id: 2, section: "projekty", tag: "Infrastruktura", title: "Napojení interního portálu na centrální databázi", status: "progress" }
 ];
 
 let approvals = JSON.parse(localStorage.getItem("il_exec_approvals")) || defaultApprovals;
@@ -124,7 +119,9 @@ function renderOverview() {
   }
 
   const tbody = document.getElementById("divisionsTableBody");
-  tbody.innerHTML = divisionsData.map((d) => `
+  tbody.innerHTML = divisionsData
+    .map(
+      (d) => `
     <tr data-jump="podnikani">
       <td>
         <span class="div-name">${d.name}</span>
@@ -137,7 +134,9 @@ function renderOverview() {
       <td><strong>${d.metric}</strong></td>
       <td class="muted">${d.deviation}</td>
     </tr>
-  `).join("");
+  `
+    )
+    .join("");
 
   const appList = document.getElementById("approvalsList");
   if (!approvals.length) {
@@ -145,7 +144,9 @@ function renderOverview() {
     return;
   }
 
-  appList.innerHTML = approvals.map((a) => `
+  appList.innerHTML = approvals
+    .map(
+      (a) => `
     <div class="approval-item">
       <div class="approval-meta">
         <span>${a.division}</span>
@@ -157,7 +158,9 @@ function renderOverview() {
         <button class="btn-reject" data-app-action="reject" data-id="${a.id}">Zamítnout</button>
       </div>
     </div>
-  `).join("");
+  `
+    )
+    .join("");
 }
 
 function renderDetail() {
@@ -169,10 +172,12 @@ function renderDetail() {
     return;
   }
 
-  detailList.innerHTML = secItems.map((item) => {
-    const tagText = item.tag ? ` • ${item.tag}` : "";
-    const btnText = item.status === "urgent" ? "Převzít" : item.status === "progress" ? "Uzavřít" : "Uzavřeno ✓";
-    return `
+  detailList.innerHTML = secItems
+    .map((item) => {
+      const tagText = item.tag ? ` • ${item.tag}` : "";
+      const btnText =
+        item.status === "urgent" ? "Převzít" : item.status === "progress" ? "Uzavřít" : "Uzavřeno ✓";
+      return `
       <div class="task-row">
         <div>
           <div><span class="status-dot st-${item.status}"></span><strong>${item.title}</strong></div>
@@ -181,13 +186,16 @@ function renderDetail() {
         <button data-action="cycle" data-id="${item.id}">${btnText}</button>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 }
 
 function render() {
   renderOverview();
   if (activeSection === "sklad" && window.SkladModule) {
     window.SkladModule.render();
+  } else if (activeSection === "podnikani" && window.PodnikaniModule) {
+    window.PodnikaniModule.render();
   } else if (activeSection !== "prehled") {
     renderDetail();
   }
@@ -203,14 +211,13 @@ function switchSection(section) {
   document.getElementById("pageTitle").textContent = info.title;
   document.getElementById("crumbCurrent").textContent = info.title;
 
+  const isCustomModule = section === "podnikani" || section === "sklad";
   document.getElementById("view-prehled").classList.toggle("hidden", section !== "prehled");
+  document.getElementById("view-podnikani").classList.toggle("hidden", section !== "podnikani");
   document.getElementById("view-sklad").classList.toggle("hidden", section !== "sklad");
-  document.getElementById("view-detail").classList.toggle(
-    "hidden",
-    section === "prehled" || section === "sklad"
-  );
+  document.getElementById("view-detail").classList.toggle("hidden", section === "prehled" || isCustomModule);
 
-  if (section !== "prehled" && section !== "sklad") {
+  if (section !== "prehled" && !isCustomModule) {
     document.getElementById("detailHeading").textContent = info.title;
     document.getElementById("detailSubheading").textContent = info.desc;
   }
@@ -250,11 +257,10 @@ document.getElementById("mainContent").addEventListener("click", (e) => {
   }
 });
 
-// Modal: Nový záznam do sekcí
 const modal = document.getElementById("newModal");
 
 function openModalWithSection(defaultSec) {
-  if (defaultSec && defaultSec !== "prehled" && defaultSec !== "sklad") {
+  if (defaultSec && defaultSec !== "prehled" && defaultSec !== "podnikani" && defaultSec !== "sklad") {
     document.getElementById("itemSection").value = defaultSec;
   }
   modal.showModal();
@@ -278,7 +284,6 @@ document.getElementById("newItemForm").addEventListener("submit", (e) => {
   saveAll();
 });
 
-// Modal: Nový bod ke schválení
 const appModal = document.getElementById("approvalModal");
 document.getElementById("openApprovalModal").addEventListener("click", () => appModal.showModal());
 document.getElementById("closeApprovalModal").addEventListener("click", () => appModal.close());
@@ -308,5 +313,4 @@ render();
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
-                                      }
-  
+}
