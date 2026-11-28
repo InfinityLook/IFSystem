@@ -7,11 +7,14 @@
   <title>InfinityLook | Executive Portal</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="prehled.css" />
   <link rel="stylesheet" href="sklad.css" />
   <link rel="stylesheet" href="podnikani.css" />
   <link rel="stylesheet" href="finance.css" />
   <link rel="stylesheet" href="projekty.css" />
   <link rel="stylesheet" href="marketing.css" />
+  <link rel="stylesheet" href="lide.css" />
+  <link rel="stylesheet" href="kartoteka.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -66,34 +69,48 @@
       </header>
 
       <main class="content" id="mainContent">
-        <!-- HLAVNÍ STRÁNKA: ŘEDITELSKÝ PŘEHLED + DIVIZNÍ ŘÍZENÍ -->
+        <!-- HLAVNÍ STRÁNKA: AKČNÍ PŘEHLED -->
         <div id="view-prehled" class="view-section">
+          <section class="panel ov-quick-bar">
+            <span class="ov-quick-label">Rychlý skok do práce:</span>
+            <div class="ov-quick-actions">
+              <button class="btn-sm" data-quick-jump="podnikani" data-focus="bizNazevInput">+ Odvětví</button>
+              <button class="btn-sm" data-quick-jump="finance" data-focus="finAmountInput">+ Transakce</button>
+              <button class="btn-sm" data-quick-jump="projekty" data-focus="prjNameInput">+ Projekt</button>
+              <button class="btn-sm" data-quick-jump="sklad" data-focus="stNameInput">+ Sklad</button>
+              <button class="btn-sm" data-quick-jump="marketing" data-focus="mktNameInput">+ Kampaň</button>
+            </div>
+          </section>
+
           <section class="kpi-grid">
             <div class="kpi-card">
               <div class="kpi-top">
                 <span class="kpi-label">Čistá finanční bilance</span>
-                <span class="trend trend-up" id="kpiFinMarginBadge">0 %</span>
+                <span class="trend trend-up" id="kpiFinMarginBadge">Marže 0 %</span>
               </div>
               <div class="kpi-value" id="kpiRevenue">0 Kč</div>
-              <div class="kpi-sub">Příjmy mínus výdaje z modulu Finance</div>
-            </div>
-
-            <div class="kpi-card">
-              <div class="kpi-top">
-                <span class="kpi-label">Plnění zakázek & SLA</span>
-                <span class="trend trend-up">98,2 %</span>
+              <div class="ov-fin-strip">
+                <span>Příjmy: <span class="ov-fin-in" id="ovFinIncome">+0 Kč</span></span>
+                <span>Výdaje: <span class="ov-fin-out" id="ovFinExpense">-0 Kč</span></span>
               </div>
-              <div class="kpi-value" id="kpiSla">V normě</div>
-              <div class="kpi-sub">Rozvoz a expedice v termínu</div>
             </div>
 
             <div class="kpi-card">
               <div class="kpi-top">
                 <span class="kpi-label">Hodnota skladu</span>
-                <span class="trend trend-neutral" id="kpiStockAlertsBadge">0 pod limitem</span>
+                <span class="trend trend-neutral" id="kpiStockAlertsBadge">Vše v pořádku</span>
               </div>
               <div class="kpi-value" id="kpiOverviewStockVal">0 Kč</div>
               <div class="kpi-sub">Aktuální skladová hodnota</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Běžící projekty / kampaně</span>
+                <span class="trend trend-up" id="kpiActiveWorkBadge">Bez běžících</span>
+              </div>
+              <div class="kpi-value" id="kpiActiveWork">0 / 0</div>
+              <div class="kpi-sub">V realizaci vs. aktivní marketing</div>
             </div>
 
             <div class="kpi-card">
@@ -106,42 +123,52 @@
             </div>
           </section>
 
-          <section class="exec-grid">
-            <div class="panel">
-              <div class="panel-header">
-                <div>
-                  <h2>Divizní matice</h2>
-                  <p class="muted">Výkonnost a provozní stav jednotlivých podnikatelských divizí</p>
+          <section class="ov-main-grid">
+            <div class="ov-stack">
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2>Co vyžaduje pozornost</h2>
+                    <p class="muted">Provozní signály ze skladu a rozjetých projektů</p>
+                  </div>
+                  <span class="trend trend-neutral" id="ovRadarBadge">V klidu</span>
                 </div>
-                <button class="btn-ghost" data-jump="podnikani">Otevřít odvětví →</button>
+                <div id="ovRadarList" class="ov-radar-list"></div>
               </div>
 
-              <div class="table-wrap">
-                <table class="corp-table">
-                  <thead>
-                    <tr>
-                      <th>Divize</th>
-                      <th>Stav provozu</th>
-                      <th>Odpovědná osoba</th>
-                      <th>Denní výkon</th>
-                      <th>Odchylka</th>
-                    </tr>
-                  </thead>
-                  <tbody id="divisionsTableBody"></tbody>
-                </table>
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2>Odvětví v kostce</h2>
+                    <p class="muted">Bilance a aktivita podle oborů z modulu Podnikání</p>
+                  </div>
+                  <span class="trend trend-neutral" id="ovBizBadge">0 odvětví</span>
+                </div>
+                <div id="ovBizList" class="ov-biz-list"></div>
               </div>
             </div>
 
-            <div class="panel">
-              <div class="panel-header">
-                <div>
-                  <h2>Ke schválení vedením</h2>
-                  <p class="muted">Položky vyžadující potvrzení</p>
+            <div class="ov-stack">
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2>Ke schválení vedením</h2>
+                    <p class="muted">Položky vyžadující potvrzení</p>
+                  </div>
+                  <button class="btn-ghost" id="openApprovalModal">+ Přidat</button>
                 </div>
-                <button class="btn-ghost" id="openApprovalModal">+ Přidat</button>
+                <div id="approvalsList" class="approvals-list"></div>
               </div>
 
-              <div id="approvalsList" class="approvals-list"></div>
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2>Puls organizace</h2>
+                    <p class="muted">Rychlé počty z ostatních modulů</p>
+                  </div>
+                </div>
+                <div id="ovPulseGrid" class="ov-pulse-grid"></div>
+              </div>
             </div>
           </section>
         </div>
@@ -683,6 +710,249 @@
           </section>
         </div>
 
+        <!-- MODUL: LIDÉ -->
+        <div id="view-lide" class="view-section hidden">
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Lidé celkem</span>
+                <span class="trend trend-neutral">Tým</span>
+              </div>
+              <div class="kpi-value" id="pplKpiTotal">0</div>
+              <div class="kpi-sub">Zapsaní členové a spolupracovníci</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Aktivní</span>
+                <span class="trend trend-up">V provozu</span>
+              </div>
+              <div class="kpi-value" id="pplKpiActive">0</div>
+              <div class="kpi-sub">Právě k dispozici</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Volno / Dovolená</span>
+                <span class="trend trend-warn">Stav</span>
+              </div>
+              <div class="kpi-value" id="pplKpiLeave">0</div>
+              <div class="kpi-sub">Dočasně mimo provoz</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Externě / Spolupráce</span>
+                <span class="trend trend-neutral">Partneři</span>
+              </div>
+              <div class="kpi-value" id="pplKpiExternal">0</div>
+              <div class="kpi-sub">Externí výpomoc a spolupráce</div>
+            </div>
+          </section>
+
+          <section class="panel ppl-form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Přidat člověka / spolupracovníka</h2>
+                <p class="muted">Zadej jméno, roli, přiřaď odvětví z Podnikání, stav a kontakt</p>
+              </div>
+            </div>
+
+            <form id="pplAddForm" class="ppl-form-body">
+              <div class="ppl-form-grid">
+                <div class="form-group">
+                  <label for="pplNameInput">Jméno a příjmení</label>
+                  <input id="pplNameInput" type="text" placeholder="Např. Jan Novák..." required />
+                </div>
+
+                <div class="form-group">
+                  <label for="pplRoleInput">Role / pozice</label>
+                  <input id="pplRoleInput" type="text" placeholder="Např. Kurýr, Skladník, Vývoj..." />
+                </div>
+
+                <div class="form-group">
+                  <label for="pplBranchInput">Odvětví</label>
+                  <select id="pplBranchInput"></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="pplStatusInput">Stav</label>
+                  <select id="pplStatusInput">
+                    <option value="aktivni">Aktivní</option>
+                    <option value="volno">Volno / Dovolená</option>
+                    <option value="externi">Externě / Spolupráce</option>
+                    <option value="neaktivni">Neaktivní</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="pplContactInput">Kontakt / poznámka</label>
+                  <input id="pplContactInput" type="text" placeholder="Telefon, e-mail nebo poznámka..." />
+                </div>
+
+                <button type="submit" class="btn-primary">+ Přidat</button>
+              </div>
+            </form>
+          </section>
+
+          <div class="panel toolbar-panel">
+            <div class="toolbar-filters">
+              <select id="pplStatusFilter" aria-label="Filtrovat podle stavu">
+                <option value="all">Všechny stavy</option>
+                <option value="aktivni">Aktivní</option>
+                <option value="volno">Volno / Dovolená</option>
+                <option value="externi">Externě / Spolupráce</option>
+                <option value="neaktivni">Neaktivní</option>
+              </select>
+
+              <select id="pplBranchFilter" aria-label="Filtrovat podle odvětví">
+                <option value="all">Všechna odvětví</option>
+              </select>
+
+              <input type="search" id="pplSearch" class="inline-search" placeholder="Hledat jméno, roli, odvětví nebo kontakt..." />
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Seznam lidí</h2>
+                <p class="muted">Přehled týmů, rolí, přiřazení k odvětvím a aktuálních stavů</p>
+              </div>
+              <span class="trend trend-neutral" id="pplCountBadge">0 lidí</span>
+            </div>
+            <div id="pplList" class="ppl-list"></div>
+          </section>
+        </div>
+
+        <!-- MODUL: KARTOTÉKA -->
+        <div id="view-kartoteka" class="view-section hidden">
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Záznamů celkem</span>
+                <span class="trend trend-neutral">Rejstřík</span>
+              </div>
+              <div class="kpi-value" id="katKpiTotal">0</div>
+              <div class="kpi-sub">Všechny položky v kartotéce</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Aktivní</span>
+                <span class="trend trend-up">Platné</span>
+              </div>
+              <div class="kpi-value" id="katKpiActive">0</div>
+              <div class="kpi-sub">Aktivní vazby a záznamy</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">V jednání</span>
+                <span class="trend trend-warn">Rozjednané</span>
+              </div>
+              <div class="kpi-value" id="katKpiNegotiating">0</div>
+              <div class="kpi-sub">Probíhající domluvy a smlouvy</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Dodavatelé & Partneři</span>
+                <span class="trend trend-neutral">Síť</span>
+              </div>
+              <div class="kpi-value" id="katKpiPartners">0</div>
+              <div class="kpi-sub">Dodavatelé a obchodní partneři</div>
+            </div>
+          </section>
+
+          <section class="panel kat-form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Přidat položku do kartotéky</h2>
+                <p class="muted">Zapiš dodavatele, partnera, klienta nebo smlouvu, přiřaď odvětví a stav</p>
+              </div>
+            </div>
+
+            <form id="katAddForm" class="kat-form-body">
+              <div class="kat-form-grid">
+                <div class="form-group">
+                  <label for="katNameInput">Název / subjekt</label>
+                  <input id="katNameInput" type="text" placeholder="Např. Gastro Obaly s.r.o., Smlouva..." required />
+                </div>
+
+                <div class="form-group">
+                  <label for="katTypeInput">Typ záznamu</label>
+                  <select id="katTypeInput">
+                    <option value="Dodavatel">Dodavatel</option>
+                    <option value="Partner">Partner</option>
+                    <option value="Klient">Klient</option>
+                    <option value="Smlouva / Úřad">Smlouva / Úřad</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="katBranchInput">Odvětví</label>
+                  <select id="katBranchInput"></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="katStatusInput">Stav</label>
+                  <select id="katStatusInput">
+                    <option value="aktivni">Aktivní</option>
+                    <option value="v-jednani">V jednání</option>
+                    <option value="pozastaveno">Pozastaveno</option>
+                    <option value="ukonceno">Ukončeno</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="katContactInput">Kontakt / poznámka</label>
+                  <input id="katContactInput" type="text" placeholder="IČO, telefon, e-mail nebo poznámka..." />
+                </div>
+
+                <button type="submit" class="btn-primary">+ Přidat</button>
+              </div>
+            </form>
+          </section>
+
+          <div class="panel toolbar-panel">
+            <div class="toolbar-filters">
+              <select id="katTypeFilter" aria-label="Filtrovat podle typu">
+                <option value="all">Všechny typy</option>
+                <option value="Dodavatel">Dodavatel</option>
+                <option value="Partner">Partner</option>
+                <option value="Klient">Klient</option>
+                <option value="Smlouva / Úřad">Smlouva / Úřad</option>
+              </select>
+
+              <select id="katStatusFilter" aria-label="Filtrovat podle stavu">
+                <option value="all">Všechny stavy</option>
+                <option value="aktivni">Aktivní</option>
+                <option value="v-jednani">V jednání</option>
+                <option value="pozastaveno">Pozastaveno</option>
+                <option value="ukonceno">Ukončeno</option>
+              </select>
+
+              <select id="katBranchFilter" aria-label="Filtrovat podle odvětví">
+                <option value="all">Všechna odvětví</option>
+              </select>
+
+              <input type="search" id="katSearch" class="inline-search" placeholder="Hledat název, typ, odvětví nebo kontakt..." />
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Seznam kartotéky</h2>
+                <p class="muted">Dodavatelé, partneři, klienti, smlouvy a kontakty podle odvětví</p>
+              </div>
+              <span class="trend trend-neutral" id="katCountBadge">0 záznamů</span>
+            </div>
+            <div id="katList" class="kat-list"></div>
+          </section>
+        </div>
+
         <!-- DETAIL OSTATNÍCH POLOŽEK MENU -->
         <div id="view-detail" class="view-section hidden">
           <div class="panel detail-banner">
@@ -764,10 +1034,13 @@
   </dialog>
 
   <script src="app.js"></script>
+  <script src="prehled.js"></script>
   <script src="podnikani.js"></script>
   <script src="sklad.js"></script>
   <script src="finance.js"></script>
   <script src="projekty.js"></script>
   <script src="marketing.js"></script>
+  <script src="lide.js"></script>
+  <script src="kartoteka.js"></script>
 </body>
 </html>
