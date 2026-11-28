@@ -4,7 +4,7 @@ const sectionInfo = {
   sklad: { title: "Sklad", desc: "Přehledné menu zásob podle odvětví" },
   finance: { title: "Finance", desc: "Příjmy, výdaje, bilance po odvětvích a finanční přehled" },
   projekty: { title: "Projekty", desc: "Správa projektů, postupu, rozpočtů a termínů podle odvětví" },
-  marketing: { title: "Marketing", desc: "Akvizice zákazníků, kampaně a prezentace značek" },
+  marketing: { title: "Marketing", desc: "Kampaně, kanály, nápady, rozpočty a výsledky podle odvětví" },
   lide: { title: "Lidé", desc: "Organizační struktura, role, směny a kurýři" },
   kartoteka: { title: "Kartotéka", desc: "Evidence dodavatelů, partnerů a smluvních vztahů" },
   nastaveni: { title: "Nastavení", desc: "Systémová konfigurace, oprávnění a integrace" }
@@ -204,6 +204,8 @@ function render() {
     window.FinanceModule.render();
   } else if (activeSection === "projekty" && window.ProjektyModule) {
     window.ProjektyModule.render();
+  } else if (activeSection === "marketing" && window.MarketingModule) {
+    window.MarketingModule.render();
   } else if (activeSection !== "prehled") {
     renderDetail();
   }
@@ -223,12 +225,14 @@ function switchSection(section) {
     section === "podnikani" ||
     section === "sklad" ||
     section === "finance" ||
-    section === "projekty";
+    section === "projekty" ||
+    section === "marketing";
   document.getElementById("view-prehled").classList.toggle("hidden", section !== "prehled");
   document.getElementById("view-podnikani").classList.toggle("hidden", section !== "podnikani");
   document.getElementById("view-sklad").classList.toggle("hidden", section !== "sklad");
   document.getElementById("view-finance").classList.toggle("hidden", section !== "finance");
   document.getElementById("view-projekty").classList.toggle("hidden", section !== "projekty");
+  document.getElementById("view-marketing").classList.toggle("hidden", section !== "marketing");
   document.getElementById("view-detail").classList.toggle("hidden", section === "prehled" || isCustomModule);
 
   if (section !== "prehled" && !isCustomModule) {
@@ -280,7 +284,8 @@ function openModalWithSection(defaultSec) {
     defaultSec !== "podnikani" &&
     defaultSec !== "sklad" &&
     defaultSec !== "finance" &&
-    defaultSec !== "projekty"
+    defaultSec !== "projekty" &&
+    defaultSec !== "marketing"
   ) {
     document.getElementById("itemSection").value = defaultSec;
   }
