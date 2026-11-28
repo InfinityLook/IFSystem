@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="podnikani.css" />
   <link rel="stylesheet" href="finance.css" />
   <link rel="stylesheet" href="projekty.css" />
+  <link rel="stylesheet" href="marketing.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -545,6 +546,143 @@
           </section>
         </div>
 
+        <!-- MODUL: MARKETING -->
+        <div id="view-marketing" class="view-section hidden">
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Aktivní kampaně</span>
+                <span class="trend trend-up">Běží</span>
+              </div>
+              <div class="kpi-value" id="mktKpiActive">0</div>
+              <div class="kpi-sub">Právě spuštěné marketingové aktivity</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Rozpočet aktivních</span>
+                <span class="trend trend-warn">Kč</span>
+              </div>
+              <div class="kpi-value" id="mktKpiBudget">0 Kč</div>
+              <div class="kpi-sub">Součet rozpočtů aktivních kampaní</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Nápady v zásobníku</span>
+                <span class="trend trend-neutral">Plán</span>
+              </div>
+              <div class="kpi-value" id="mktKpiIdeas">0</div>
+              <div class="kpi-sub">Připravené nápady ke spuštění</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Celkem v evidenci</span>
+                <span class="trend trend-neutral">Přehled</span>
+              </div>
+              <div class="kpi-value" id="mktKpiTotal">0</div>
+              <div class="kpi-sub">Všechny zapsané aktivity</div>
+            </div>
+          </section>
+
+          <section class="panel mkt-form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Přidat marketingovou aktivitu / kampaň</h2>
+                <p class="muted">Zapiš kampaň nebo nápad, zvol odvětví, kanál, stav a rozpočet</p>
+              </div>
+            </div>
+
+            <form id="mktAddForm" class="mkt-form-body">
+              <div class="mkt-form-grid">
+                <div class="form-group">
+                  <label for="mktNameInput">Název kampaně / aktivity</label>
+                  <input id="mktNameInput" type="text" placeholder="Např. Startovací promo, Reels série..." required />
+                </div>
+
+                <div class="form-group">
+                  <label for="mktBranchInput">Odvětví</label>
+                  <select id="mktBranchInput"></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="mktChannelInput">Kanál</label>
+                  <select id="mktChannelInput">
+                    <option value="Sociální sítě">Sociální sítě</option>
+                    <option value="Placená reklama">Placená reklama</option>
+                    <option value="SEO / Obsah">SEO / Obsah</option>
+                    <option value="Spolupráce / Akce">Spolupráce / Akce</option>
+                    <option value="E-mail / Notifikace">E-mail / Notifikace</option>
+                    <option value="Jiný kanál">Jiný kanál</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="mktStatusInput">Stav</label>
+                  <select id="mktStatusInput">
+                    <option value="napad">Nápad</option>
+                    <option value="aktivni">Aktivní</option>
+                    <option value="pozastaveno">Pozastaveno</option>
+                    <option value="ukonceno">Ukončeno</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="mktBudgetInput">Rozpočet (Kč)</label>
+                  <input id="mktBudgetInput" type="number" min="0" step="1" value="0" />
+                </div>
+
+                <div class="form-group">
+                  <label for="mktNoteInput">Poznámka / cíl</label>
+                  <input id="mktNoteInput" type="text" placeholder="Cíl nebo poznámka k výsledku..." />
+                </div>
+
+                <button type="submit" class="btn-primary">+ Přidat</button>
+              </div>
+            </form>
+          </section>
+
+          <div class="panel toolbar-panel">
+            <div class="toolbar-filters">
+              <select id="mktStatusFilter" aria-label="Filtrovat podle stavu">
+                <option value="all">Všechny stavy</option>
+                <option value="napad">Nápad</option>
+                <option value="aktivni">Aktivní</option>
+                <option value="pozastaveno">Pozastaveno</option>
+                <option value="ukonceno">Ukončeno</option>
+              </select>
+
+              <select id="mktBranchFilter" aria-label="Filtrovat podle odvětví">
+                <option value="all">Všechna odvětví</option>
+              </select>
+
+              <select id="mktChannelFilter" aria-label="Filtrovat podle kanálu">
+                <option value="all">Všechny kanály</option>
+                <option value="Sociální sítě">Sociální sítě</option>
+                <option value="Placená reklama">Placená reklama</option>
+                <option value="SEO / Obsah">SEO / Obsah</option>
+                <option value="Spolupráce / Akce">Spolupráce / Akce</option>
+                <option value="E-mail / Notifikace">E-mail / Notifikace</option>
+                <option value="Jiný kanál">Jiný kanál</option>
+              </select>
+
+              <input type="search" id="mktSearch" class="inline-search" placeholder="Hledat kampaň, kanál nebo poznámku..." />
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Přehled marketingových aktivit</h2>
+                <p class="muted">Kampaně, kanály, odvětví, rozpočty a výsledky</p>
+              </div>
+              <span class="trend trend-neutral" id="mktCountBadge">0 aktivit</span>
+            </div>
+            <div id="mktList" class="mkt-list"></div>
+          </section>
+        </div>
+
         <!-- DETAIL OSTATNÍCH POLOŽEK MENU -->
         <div id="view-detail" class="view-section hidden">
           <div class="panel detail-banner">
@@ -630,5 +768,6 @@
   <script src="sklad.js"></script>
   <script src="finance.js"></script>
   <script src="projekty.js"></script>
+  <script src="marketing.js"></script>
 </body>
 </html>
