@@ -1,0 +1,144 @@
+.ppl-form-panel {
+  margin-bottom: 1.25rem;
+}
+
+.ppl-form-body {
+  padding: 1.1rem 1.25rem;
+}
+
+.ppl-form-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1.1fr 1.1fr 0.95fr 1.25fr auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.ppl-form-grid .form-group {
+  margin-bottom: 0;
+}
+
+.ppl-empty {
+  padding: 2.25rem 1.25rem;
+  text-align: center;
+}
+
+.ppl-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ppl-row {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ppl-row:last-child {
+  border-bottom: none;
+}
+
+.ppl-main {
+  min-width: 230px;
+  flex: 1.3;
+}
+
+.ppl-title-line {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.ppl-name {
+  font-weight: 700;
+  font-size: 0.96rem;
+}
+
+.ppl-role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.ppl-branch-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.ppl-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tag-aktivni {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.tag-volno {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.tag-externi {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.tag-neaktivni {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.ppl-meta-line {
+  margin-top: 0.28rem;
+  font-size: 0.83rem;
+}
+
+.ppl-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ppl-status-select {
+  padding: 0.34rem 0.5rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1180px) {
+  .ppl-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .ppl-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
