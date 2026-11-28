@@ -1,6 +1,7 @@
 (function () {
   const STORAGE_KEY = "il_lide_seznam_v1";
   const BIZ_STORAGE_KEY = "il_odvetvi_seznam";
+  const ROLE_STORAGE_KEY = "il_role_ranky_v1";
 
   const STATUS_LABELS = {
     "aktivni": "Aktivní",
@@ -16,7 +17,7 @@
   let searchQuery = "";
 
   function escapeHtml(str) {
-    return String(str)
+    return String(str || "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
@@ -30,6 +31,18 @@
     try {
       const raw = JSON.parse(localStorage.getItem(BIZ_STORAGE_KEY)) || [];
       return raw.map((item) => item.nazev).filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
+  function getRoles() {
+    if (window.RoleModule && typeof window.RoleModule.getRoles === "function") {
+      return window.RoleModule.getRoles();
+    }
+    try {
+      const raw = JSON.parse(localStorage.getItem(ROLE_STORAGE_KEY)) || [];
+      return Array.isArray(raw) ? raw : [];
     } catch {
       return [];
     }
@@ -85,6 +98,23 @@
         filterSelect.value = "all";
       }
     }
+
+    const roleOptions = getRoles().map((r) => r.name).filter(Boolean);
+    const usedRoles = people.map((p) => p.rank).filter(Boolean);
+    const allRoles = [...new Set([...roleOptions, ...usedRoles])];
+
+    const rankInput = document.getElementById("pplRankInput");
+    if (rankInput) {
+      const prevRank = rankInput.value;
+      rankInput.innerHTML =
+        `<option value="">Bez ranku / role</option>` +
+        allRoles
+          .map((rl) => `<option value="${escapeHtml(rl)}">${escapeHtml(rl)}</option>`)
+          .join("");
+      if (prevRank && allRoles.includes(prevRank)) {
+        rankInput.value = prevRank;
+      }
+    }
   }
 
   function render() {
@@ -99,6 +129,8 @@
     document.getElementById("pplKpiLeave").textContent = summary.onLeave;
     document.getElementById("pplKpiExternal").textContent = summary.external;
 
+    const roleOptions = getRoles().map((r) => r.name).filter(Boolean);
+
     const badgeEl = document.getElementById("pplCountBadge");
     const filtered = people.filter((p) => {
       const stOk = statusFilter === "all" || p.status === statusFilter;
@@ -107,6 +139,7 @@
       const qOk =
         !q ||
         p.name.toLowerCase().includes(q) ||
+        (p.rank && p.rank.toLowerCase().includes(q)) ||
         (p.role && p.role.toLowerCase().includes(q)) ||
         (p.branch && p.branch.toLowerCase().includes(q)) ||
         (p.contact && p.contact.toLowerCase().includes(q));
@@ -142,11 +175,14 @@
         const metaParts = [];
         if (p.contact) metaParts.push(`Kontakt / poznámka: ${p.contact}`);
 
+        const rowRoleChoices = [...new Set([...roleOptions, ...(p.rank ? [p.rank] : [])])];
+
         return `
           <div class="ppl-row" data-id="${p.id}">
             <div class="ppl-main">
               <div class="ppl-title-line">
                 <span class="ppl-name">${escapeHtml(p.name)}</span>
+                ${p.rank ? `<span class="ppl-rank-badge">${escapeHtml(p.rank)}</span>` : ""}
                 ${p.role ? `<span class="ppl-role-badge">${escapeHtml(p.role)}</span>` : ""}
                 <span class="ppl-branch-badge">${escapeHtml(p.branch || "Skupinové")}</span>
                 <span class="ppl-tag tag-${escapeHtml(p.status)}">${escapeHtml(statusLabel)}</span>
@@ -155,6 +191,15 @@
             </div>
 
             <div class="ppl-controls">
+              <select class="ppl-rank-select" data-ppl-rank="${p.id}" aria-label="Přiřadit roli nebo rank">
+                <option value="">Bez ranku</option>
+                ${rowRoleChoices
+                  .map(
+                    (rl) =>
+                      `<option value="${escapeHtml(rl)}" ${p.rank === rl ? "selected" : ""}>${escapeHtml(rl)}</option>`
+                  )
+                  .join("")}
+              </select>
               <select class="ppl-status-select" data-ppl-status="${p.id}" aria-label="Změnit stav člověka">
                 <option value="aktivni" ${p.status === "aktivni" ? "selected" : ""}>Aktivní</option>
                 <option value="volno" ${p.status === "volno" ? "selected" : ""}>Volno / Dovolená</option>
@@ -176,6 +221,7 @@
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         const nameEl = document.getElementById("pplNameInput");
+        const rankEl = document.getElementById("pplRankInput");
         const roleEl = document.getElementById("pplRoleInput");
         const branchEl = document.getElementById("pplBranchInput");
         const statusEl = document.getElementById("pplStatusInput");
@@ -184,12 +230,14 @@
         const name = nameEl ? nameEl.value.trim() : "";
         if (!name) return;
 
+        const chosenRank = rankEl ? rankEl.value : "";
         const chosenBranch = branchEl ? branchEl.value : "Skupinové";
         const chosenStatus = statusEl ? statusEl.value : "aktivni";
 
         people.unshift({
           id: Date.now(),
           name,
+          rank: chosenRank,
           role: roleEl ? roleEl.value.trim() : "",
           branch: chosenBranch,
           status: chosenStatus,
@@ -197,6 +245,7 @@
         });
 
         form.reset();
+        if (rankEl) rankEl.value = chosenRank;
         if (branchEl) branchEl.value = chosenBranch;
         if (statusEl) statusEl.value = chosenStatus;
         if (nameEl) nameEl.focus();
@@ -246,6 +295,17 @@
       });
 
       listEl.addEventListener("change", (e) => {
+        const rkSel = e.target.closest("[data-ppl-rank]");
+        if (rkSel) {
+          const id = Number(rkSel.dataset.pplRank);
+          const nextRank = rkSel.value;
+          people = people.map((p) =>
+            p.id === id ? { ...p, rank: nextRank } : p
+          );
+          persistAndNotify();
+          return;
+        }
+
         const stSel = e.target.closest("[data-ppl-status]");
         if (!stSel) return;
         const id = Number(stSel.dataset.pplStatus);
@@ -266,3 +326,4 @@
     getSummary
   };
 })();
+                            
