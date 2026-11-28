@@ -1,12 +1,12 @@
 const sectionInfo = {
-  prehled: { title: "Přehled", desc: "Ředitelský přehled výkonnosti a divizí" },
+  prehled: { title: "Přehled", desc: "Akční přehled provozu, podnětů a odvětví" },
   podnikani: { title: "Podnikání", desc: "Seznam odvětví a druhů podnikání" },
   sklad: { title: "Sklad", desc: "Přehledné menu zásob podle odvětví" },
   finance: { title: "Finance", desc: "Příjmy, výdaje, bilance po odvětvích a finanční přehled" },
   projekty: { title: "Projekty", desc: "Správa projektů, postupu, rozpočtů a termínů podle odvětví" },
   marketing: { title: "Marketing", desc: "Kampaně, kanály, nápady, rozpočty a výsledky podle odvětví" },
-  lide: { title: "Lidé", desc: "Organizační struktura, role, směny a kurýři" },
-  kartoteka: { title: "Kartotéka", desc: "Evidence dodavatelů, partnerů a smluvních vztahů" },
+  lide: { title: "Lidé", desc: "Členové týmu, role, stavy a přiřazení k odvětvím" },
+  kartoteka: { title: "Kartotéka", desc: "Dodavatelé, partneři, klienti, smlouvy a kontakty podle odvětví" },
   nastaveni: { title: "Nastavení", desc: "Systémová konfigurace, oprávnění a integrace" }
 };
 
@@ -42,50 +42,7 @@ document.getElementById("openSidebar").addEventListener("click", () => {
 document.getElementById("closeSidebar").addEventListener("click", closeMobileMenu);
 backdrop.addEventListener("click", closeMobileMenu);
 
-const divisionsData = [
-  {
-    name: "Rozvoz jídla",
-    sub: "Gastronomie & Logistika",
-    status: "V provozu",
-    statusType: "ok",
-    owner: "Provozní dispečink",
-    metric: "14 200 Kč",
-    deviation: "+11 % vs. průměr"
-  },
-  {
-    name: "E-shop",
-    sub: "Online prodej & Expedice",
-    status: "V provozu",
-    statusType: "ok",
-    owner: "Expedice & Sklad",
-    metric: "7 450 Kč",
-    deviation: "Bez odchylky"
-  },
-  {
-    name: "PWA Google Play",
-    sub: "Digitální produkt / Aplikace",
-    status: "Aktivní",
-    statusType: "ok",
-    owner: "Produktový vývoj",
-    metric: "1 900 Kč",
-    deviation: "+4 % aktivních"
-  },
-  {
-    name: "Další podnikání",
-    sub: "Ostatní obchodní aktivity",
-    status: "Kontrola",
-    statusType: "warn",
-    owner: "Vedení divize",
-    metric: "1 300 Kč",
-    deviation: "Čeká na uzávěrku"
-  }
-];
-
-const defaultApprovals = [
-  { id: 101, division: "Rozvoz jídla", title: "Doplnění obalového materiálu (6 400 Kč)", time: "Dnes" },
-  { id: 102, division: "PWA Google Play", title: "Vydání nové produkční verze aplikace", time: "Dnes" }
-];
-
+const defaultApprovals = [];
 const defaultItems = [];
 
 let approvals = JSON.parse(localStorage.getItem("il_exec_approvals")) || defaultApprovals;
@@ -103,68 +60,9 @@ function saveAll() {
 }
 
 function renderOverview() {
-  const pendingCount = approvals.length;
-  document.getElementById("kpiPending").textContent = pendingCount;
-  document.getElementById("kpiPendingBadge").textContent =
-    pendingCount === 1 ? "1 položka" : `${pendingCount} položek`;
-
-  if (window.FinanceModule && typeof window.FinanceModule.getSummary === "function") {
-    const finSummary = window.FinanceModule.getSummary();
-    const sign = finSummary.net > 0 ? "+" : "";
-    document.getElementById("kpiRevenue").textContent = `${sign}${formatCzk(finSummary.net)}`;
-    document.getElementById("kpiFinMarginBadge").textContent = `Marže ${finSummary.marginPct} %`;
+  if (window.PrehledModule && typeof window.PrehledModule.render === "function") {
+    window.PrehledModule.render({ approvals, formatCzk });
   }
-
-  if (window.SkladModule && typeof window.SkladModule.getSummary === "function") {
-    const stockSummary = window.SkladModule.getSummary();
-    document.getElementById("kpiOverviewStockVal").textContent = formatCzk(stockSummary.totalValue);
-    document.getElementById("kpiStockAlertsBadge").textContent =
-      stockSummary.lowCount === 0 ? "Vše v pořádku" : `${stockSummary.lowCount} pod limitem`;
-  }
-
-  const tbody = document.getElementById("divisionsTableBody");
-  tbody.innerHTML = divisionsData
-    .map(
-      (d) => `
-    <tr data-jump="podnikani">
-      <td>
-        <span class="div-name">${d.name}</span>
-        <span class="div-sub">${d.sub}</span>
-      </td>
-      <td>
-        <span class="status-pill ${d.statusType === "ok" ? "pill-ok" : "pill-warn"}">● ${d.status}</span>
-      </td>
-      <td>${d.owner}</td>
-      <td><strong>${d.metric}</strong></td>
-      <td class="muted">${d.deviation}</td>
-    </tr>
-  `
-    )
-    .join("");
-
-  const appList = document.getElementById("approvalsList");
-  if (!approvals.length) {
-    appList.innerHTML = `<div class="approval-item"><span class="muted">Žádné otevřené položky ke schválení.</span></div>`;
-    return;
-  }
-
-  appList.innerHTML = approvals
-    .map(
-      (a) => `
-    <div class="approval-item">
-      <div class="approval-meta">
-        <span>${a.division}</span>
-        <span>${a.time}</span>
-      </div>
-      <div class="approval-title">${a.title}</div>
-      <div class="approval-actions">
-        <button class="btn-approve" data-app-action="approve" data-id="${a.id}">Schválit</button>
-        <button class="btn-reject" data-app-action="reject" data-id="${a.id}">Zamítnout</button>
-      </div>
-    </div>
-  `
-    )
-    .join("");
 }
 
 function renderDetail() {
@@ -206,12 +104,16 @@ function render() {
     window.ProjektyModule.render();
   } else if (activeSection === "marketing" && window.MarketingModule) {
     window.MarketingModule.render();
+  } else if (activeSection === "lide" && window.LideModule) {
+    window.LideModule.render();
+  } else if (activeSection === "kartoteka" && window.KartotekaModule) {
+    window.KartotekaModule.render();
   } else if (activeSection !== "prehled") {
     renderDetail();
   }
 }
 
-function switchSection(section) {
+function switchSection(section, focusId) {
   activeSection = section;
   document.querySelectorAll(".nav-item").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.section === section);
@@ -226,13 +128,17 @@ function switchSection(section) {
     section === "sklad" ||
     section === "finance" ||
     section === "projekty" ||
-    section === "marketing";
+    section === "marketing" ||
+    section === "lide" ||
+    section === "kartoteka";
   document.getElementById("view-prehled").classList.toggle("hidden", section !== "prehled");
   document.getElementById("view-podnikani").classList.toggle("hidden", section !== "podnikani");
   document.getElementById("view-sklad").classList.toggle("hidden", section !== "sklad");
   document.getElementById("view-finance").classList.toggle("hidden", section !== "finance");
   document.getElementById("view-projekty").classList.toggle("hidden", section !== "projekty");
   document.getElementById("view-marketing").classList.toggle("hidden", section !== "marketing");
+  document.getElementById("view-lide").classList.toggle("hidden", section !== "lide");
+  document.getElementById("view-kartoteka").classList.toggle("hidden", section !== "kartoteka");
   document.getElementById("view-detail").classList.toggle("hidden", section === "prehled" || isCustomModule);
 
   if (section !== "prehled" && !isCustomModule) {
@@ -242,6 +148,16 @@ function switchSection(section) {
 
   closeMobileMenu();
   render();
+
+  if (focusId) {
+    setTimeout(() => {
+      const target = document.getElementById(focusId);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        target.focus();
+      }
+    }, 30);
+  }
 }
 
 document.querySelectorAll(".nav-item").forEach((btn) => {
@@ -249,6 +165,12 @@ document.querySelectorAll(".nav-item").forEach((btn) => {
 });
 
 document.getElementById("mainContent").addEventListener("click", (e) => {
+  const quickEl = e.target.closest("[data-quick-jump]");
+  if (quickEl) {
+    switchSection(quickEl.dataset.quickJump, quickEl.dataset.focus);
+    return;
+  }
+
   const jumpEl = e.target.closest("[data-jump]");
   if (jumpEl) {
     switchSection(jumpEl.dataset.jump);
@@ -285,7 +207,9 @@ function openModalWithSection(defaultSec) {
     defaultSec !== "sklad" &&
     defaultSec !== "finance" &&
     defaultSec !== "projekty" &&
-    defaultSec !== "marketing"
+    defaultSec !== "marketing" &&
+    defaultSec !== "lide" &&
+    defaultSec !== "kartoteka"
   ) {
     document.getElementById("itemSection").value = defaultSec;
   }
