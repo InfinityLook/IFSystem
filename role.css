@@ -1,0 +1,144 @@
+.rnk-form-panel {
+  margin-bottom: 1.25rem;
+}
+
+.rnk-form-body {
+  padding: 1.1rem 1.25rem;
+}
+
+.rnk-form-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1.05fr 1.45fr auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.rnk-form-grid .form-group {
+  margin-bottom: 0;
+}
+
+.rnk-empty {
+  padding: 2.25rem 1.25rem;
+  text-align: center;
+}
+
+.rnk-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.rnk-row {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.rnk-row:last-child {
+  border-bottom: none;
+}
+
+.rnk-main {
+  min-width: 230px;
+  flex: 1.3;
+}
+
+.rnk-title-line {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.rnk-name {
+  font-weight: 700;
+  font-size: 0.96rem;
+}
+
+.rnk-branch-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.rnk-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tier-vedeni {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.tier-provoz {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.tier-specialista {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.tier-spoluprace {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.rnk-meta-line {
+  margin-top: 0.28rem;
+  font-size: 0.83rem;
+}
+
+.rnk-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ppl-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.58rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.ppl-rank-select {
+  padding: 0.34rem 0.5rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1180px) {
+  .rnk-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .rnk-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
