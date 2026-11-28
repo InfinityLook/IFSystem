@@ -8,7 +8,7 @@ const sectionInfo = {
   lide: { title: "Lidé", desc: "Členové týmu, role/ranky, stavy a přiřazení k odvětvím" },
   kartoteka: { title: "Kartotéka", desc: "Dodavatelé, partneři, klienti, smlouvy a kontakty podle odvětví" },
   role: { title: "Role & Ranky", desc: "Katalog rolí, úrovní a ranků pro přiřazení lidem a týmům" },
-  nastaveni: { title: "Nastavení", desc: "Systémová konfigurace, oprávnění a integrace" }
+  nastaveni: { title: "Nastavení", desc: "Záloha a obnovení dat, vzhled a správa úložiště" }
 };
 
 document.getElementById("todayDate").textContent = new Date().toLocaleDateString("cs-CZ", {
@@ -111,6 +111,8 @@ function render() {
     window.KartotekaModule.render();
   } else if (activeSection === "role" && window.RoleModule) {
     window.RoleModule.render();
+  } else if (activeSection === "nastaveni" && window.NastaveniModule) {
+    window.NastaveniModule.render();
   } else if (activeSection !== "prehled") {
     renderDetail();
   }
@@ -134,7 +136,8 @@ function switchSection(section, focusId) {
     section === "marketing" ||
     section === "lide" ||
     section === "kartoteka" ||
-    section === "role";
+    section === "role" ||
+    section === "nastaveni";
   document.getElementById("view-prehled").classList.toggle("hidden", section !== "prehled");
   document.getElementById("view-podnikani").classList.toggle("hidden", section !== "podnikani");
   document.getElementById("view-sklad").classList.toggle("hidden", section !== "sklad");
@@ -144,6 +147,7 @@ function switchSection(section, focusId) {
   document.getElementById("view-lide").classList.toggle("hidden", section !== "lide");
   document.getElementById("view-kartoteka").classList.toggle("hidden", section !== "kartoteka");
   document.getElementById("view-role").classList.toggle("hidden", section !== "role");
+  document.getElementById("view-nastaveni").classList.toggle("hidden", section !== "nastaveni");
   document.getElementById("view-detail").classList.toggle("hidden", section === "prehled" || isCustomModule);
 
   if (section !== "prehled" && !isCustomModule) {
@@ -215,7 +219,8 @@ function openModalWithSection(defaultSec) {
     defaultSec !== "marketing" &&
     defaultSec !== "lide" &&
     defaultSec !== "kartoteka" &&
-    defaultSec !== "role"
+    defaultSec !== "role" &&
+    defaultSec !== "nastaveni"
   ) {
     document.getElementById("itemSection").value = defaultSec;
   }
@@ -262,6 +267,10 @@ window.PortalApp = {
   addApproval: ({ division, title, time }) => {
     approvals.unshift({ id: Date.now(), division, title, time: time || "Právě teď" });
     saveAll();
+  },
+  resetRuntimeState: () => {
+    approvals = [];
+    items = [];
   }
 };
 
