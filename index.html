@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="marketing.css" />
   <link rel="stylesheet" href="lide.css" />
   <link rel="stylesheet" href="kartoteka.css" />
+  <link rel="stylesheet" href="role.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -40,6 +41,7 @@
         <button class="nav-item" data-section="marketing">Marketing</button>
         <button class="nav-item" data-section="lide">Lidé</button>
         <button class="nav-item" data-section="kartoteka">Kartotéka</button>
+        <button class="nav-item" data-section="role">Role & Ranky</button>
       </nav>
 
       <div class="sidebar-footer">
@@ -79,6 +81,7 @@
               <button class="btn-sm" data-quick-jump="projekty" data-focus="prjNameInput">+ Projekt</button>
               <button class="btn-sm" data-quick-jump="sklad" data-focus="stNameInput">+ Sklad</button>
               <button class="btn-sm" data-quick-jump="marketing" data-focus="mktNameInput">+ Kampaň</button>
+              <button class="btn-sm" data-quick-jump="role" data-focus="rnkNameInput">+ Role / Rank</button>
             </div>
           </section>
 
@@ -754,7 +757,7 @@
             <div class="panel-header">
               <div>
                 <h2>Přidat člověka / spolupracovníka</h2>
-                <p class="muted">Zadej jméno, roli, přiřaď odvětví z Podnikání, stav a kontakt</p>
+                <p class="muted">Zadej jméno, vyber roli/rank, doplň popis, přiřaď odvětví, stav a kontakt</p>
               </div>
             </div>
 
@@ -766,7 +769,12 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="pplRoleInput">Role / pozice</label>
+                  <label for="pplRankInput">Role / Rank</label>
+                  <select id="pplRankInput"></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="pplRoleInput">Pozice / upřesnění</label>
                   <input id="pplRoleInput" type="text" placeholder="Např. Kurýr, Skladník, Vývoj..." />
                 </div>
 
@@ -809,7 +817,7 @@
                 <option value="all">Všechna odvětví</option>
               </select>
 
-              <input type="search" id="pplSearch" class="inline-search" placeholder="Hledat jméno, roli, odvětví nebo kontakt..." />
+              <input type="search" id="pplSearch" class="inline-search" placeholder="Hledat jméno, rank, roli, odvětví nebo kontakt..." />
             </div>
           </div>
 
@@ -817,7 +825,7 @@
             <div class="panel-header">
               <div>
                 <h2>Seznam lidí</h2>
-                <p class="muted">Přehled týmů, rolí, přiřazení k odvětvím a aktuálních stavů</p>
+                <p class="muted">Přehled týmů, rolí/ranků, přiřazení k odvětvím a aktuálních stavů</p>
               </div>
               <span class="trend trend-neutral" id="pplCountBadge">0 lidí</span>
             </div>
@@ -953,6 +961,116 @@
           </section>
         </div>
 
+        <!-- MODUL: ROLE & RANKY -->
+        <div id="view-role" class="view-section hidden">
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Rolí a ranků celkem</span>
+                <span class="trend trend-neutral">Katalog</span>
+              </div>
+              <div class="kpi-value" id="rnkKpiTotal">0</div>
+              <div class="kpi-sub">Vytvořené role a úrovně</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Vedení</span>
+                <span class="trend trend-warn">Úroveň</span>
+              </div>
+              <div class="kpi-value" id="rnkKpiLeadership">0</div>
+              <div class="kpi-sub">Řídicí a rozhodovací role</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Provoz</span>
+                <span class="trend trend-up">Tým</span>
+              </div>
+              <div class="kpi-value" id="rnkKpiOperations">0</div>
+              <div class="kpi-sub">Každodenní provozní role a ranky</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Specialista / Spolupráce</span>
+                <span class="trend trend-neutral">Odbornost</span>
+              </div>
+              <div class="kpi-value" id="rnkKpiSpecialists">0</div>
+              <div class="kpi-sub">Specializace a externí spolupráce</div>
+            </div>
+          </section>
+
+          <section class="panel rnk-form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Přidat roli nebo rank</h2>
+                <p class="muted">Definuj název role či ranku, úroveň, odvětví a stručný popis pravomocí</p>
+              </div>
+            </div>
+
+            <form id="rnkAddForm" class="rnk-form-body">
+              <div class="rnk-form-grid">
+                <div class="form-group">
+                  <label for="rnkNameInput">Název role / ranku</label>
+                  <input id="rnkNameInput" type="text" placeholder="Např. Vedoucí provozu, Kurýr, Rank 1..." required />
+                </div>
+
+                <div class="form-group">
+                  <label for="rnkTierInput">Úroveň</label>
+                  <select id="rnkTierInput">
+                    <option value="vedeni">Vedení</option>
+                    <option value="provoz">Provoz</option>
+                    <option value="specialista">Specialista</option>
+                    <option value="spoluprace">Spolupráce</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="rnkBranchInput">Odvětví</label>
+                  <select id="rnkBranchInput"></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="rnkDescInput">Popis / pravomoci</label>
+                  <input id="rnkDescInput" type="text" placeholder="Krátký popis role nebo ranku..." />
+                </div>
+
+                <button type="submit" class="btn-primary">+ Přidat</button>
+              </div>
+            </form>
+          </section>
+
+          <div class="panel toolbar-panel">
+            <div class="toolbar-filters">
+              <select id="rnkTierFilter" aria-label="Filtrovat podle úrovně">
+                <option value="all">Všechny úrovně</option>
+                <option value="vedeni">Vedení</option>
+                <option value="provoz">Provoz</option>
+                <option value="specialista">Specialista</option>
+                <option value="spoluprace">Spolupráce</option>
+              </select>
+
+              <select id="rnkBranchFilter" aria-label="Filtrovat podle odvětví">
+                <option value="all">Všechna odvětví</option>
+              </select>
+
+              <input type="search" id="rnkSearch" class="inline-search" placeholder="Hledat roli, rank, odvětví nebo popis..." />
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Katalog rolí a ranků</h2>
+                <p class="muted">Dostupné role a ranky pro přiřazení lidem v modulu Lidé</p>
+              </div>
+              <span class="trend trend-neutral" id="rnkCountBadge">0 rolí / ranků</span>
+            </div>
+            <div id="rnkList" class="rnk-list"></div>
+          </section>
+        </div>
+
         <!-- DETAIL OSTATNÍCH POLOŽEK MENU -->
         <div id="view-detail" class="view-section hidden">
           <div class="panel detail-banner">
@@ -982,6 +1100,7 @@
           <option value="marketing">Marketing</option>
           <option value="lide">Lidé</option>
           <option value="kartoteka">Kartotéka</option>
+          <option value="role">Role & Ranky</option>
           <option value="nastaveni">Nastavení</option>
         </select>
       </div>
@@ -1042,5 +1161,6 @@
   <script src="marketing.js"></script>
   <script src="lide.js"></script>
   <script src="kartoteka.js"></script>
+  <script src="role.js"></script>
 </body>
 </html>
