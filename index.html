@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="lide.css" />
   <link rel="stylesheet" href="kartoteka.css" />
   <link rel="stylesheet" href="role.css" />
+  <link rel="stylesheet" href="nastaveni.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -1071,6 +1072,68 @@
           </section>
         </div>
 
+        <!-- MODUL: NASTAVENÍ -->
+        <div id="view-nastaveni" class="view-section hidden">
+          <div class="set-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Záloha a obnovení dat</h2>
+                  <p class="muted">Exportuj všechna data do souboru nebo je obnov ze zálohy</p>
+                </div>
+              </div>
+
+              <div class="set-card-body">
+                <p class="set-desc">
+                  Protože portál ukládá data lokálně v prohlížeči, doporučujeme si pravidelně stáhnout JSON zálohu — například před čištěním prohlížeče nebo při otevření portálu na jiném zařízení.
+                </p>
+
+                <div class="set-actions">
+                  <button type="button" class="btn-primary" id="setExportBtn">Stáhnout zálohu (.json)</button>
+                  <button type="button" class="btn-sm" id="setImportBtn">Obnovit ze souboru...</button>
+                  <input type="file" id="setImportFile" class="set-file-input" accept=".json,application/json" />
+                </div>
+
+                <div id="setFeedback" class="set-feedback hidden"></div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Vzhled a správa úložiště</h2>
+                  <p class="muted">Barevný režim a bezpečné vymazání lokálních dat</p>
+                </div>
+                <span class="trend trend-neutral" id="setCurrentThemeBadge">Tmavý režim</span>
+              </div>
+
+              <div class="set-card-body">
+                <p class="set-desc">
+                  Přepni barevný režim rozhraní nebo vymaž všechna provozní data z tohoto prohlížeče.
+                </p>
+
+                <div class="set-actions">
+                  <button type="button" class="btn-sm" id="setThemeBtn">Přepnout tmavý / světlý režim</button>
+                </div>
+
+                <div class="set-actions" style="margin-top:0.35rem">
+                  <button type="button" class="btn-danger" id="setResetBtn">Vymazat všechna data</button>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Stav uložených dat v prohlížeči</h2>
+                <p class="muted">Přehled počtu záznamů napříč moduly a využití úložiště</p>
+              </div>
+            </div>
+            <div id="setStatsList" class="set-stats-list"></div>
+          </section>
+        </div>
+
         <!-- DETAIL OSTATNÍCH POLOŽEK MENU -->
         <div id="view-detail" class="view-section hidden">
           <div class="panel detail-banner">
@@ -1162,5 +1225,6 @@
   <script src="lide.js"></script>
   <script src="kartoteka.js"></script>
   <script src="role.js"></script>
+  <script src="nastaveni.js"></script>
 </body>
 </html>
