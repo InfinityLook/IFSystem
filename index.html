@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="sklad.css" />
   <link rel="stylesheet" href="podnikani.css" />
   <link rel="stylesheet" href="finance.css" />
+  <link rel="stylesheet" href="projekty.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -429,6 +430,121 @@
           </section>
         </div>
 
+        <!-- MODUL: PROJEKTY -->
+        <div id="view-projekty" class="view-section hidden">
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Projektů celkem</span>
+                <span class="trend trend-neutral">Portfolio</span>
+              </div>
+              <div class="kpi-value" id="prjKpiTotal">0</div>
+              <div class="kpi-sub">Všechny založené projekty</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">V realizaci</span>
+                <span class="trend trend-up">Běží</span>
+              </div>
+              <div class="kpi-value" id="prjKpiActive">0</div>
+              <div class="kpi-sub">Aktivní projekty</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Dokončeno</span>
+                <span class="trend trend-neutral">Hotovo</span>
+              </div>
+              <div class="kpi-value" id="prjKpiDone">0</div>
+              <div class="kpi-sub">Uzavřené projekty</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Rozpočet aktivních</span>
+                <span class="trend trend-warn">Kč</span>
+              </div>
+              <div class="kpi-value" id="prjKpiBudget">0 Kč</div>
+              <div class="kpi-sub">Součet rozpočtů neuzavřených projektů</div>
+            </div>
+          </section>
+
+          <section class="panel prj-form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Přidat projekt</h2>
+                <p class="muted">Založ projekt, přiřaď ho k odvětví a nastav stav, rozpočet nebo termín</p>
+              </div>
+            </div>
+
+            <form id="prjAddForm" class="prj-form-body">
+              <div class="prj-form-grid">
+                <div class="form-group">
+                  <label for="prjNameInput">Název projektu</label>
+                  <input id="prjNameInput" type="text" placeholder="Např. Nová verze PWA, Rozšíření rozvozu..." required />
+                </div>
+
+                <div class="form-group">
+                  <label for="prjBranchInput">Odvětví</label>
+                  <select id="prjBranchInput"></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="prjStatusInput">Stav</label>
+                  <select id="prjStatusInput">
+                    <option value="v-planu">V plánu</option>
+                    <option value="v-realizaci">V realizaci</option>
+                    <option value="pozastaveno">Pozastaveno</option>
+                    <option value="dokonceno">Dokončeno</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="prjBudgetInput">Rozpočet (Kč)</label>
+                  <input id="prjBudgetInput" type="number" min="0" step="1" value="0" />
+                </div>
+
+                <div class="form-group">
+                  <label for="prjDeadlineInput">Termín</label>
+                  <input id="prjDeadlineInput" type="date" />
+                </div>
+
+                <button type="submit" class="btn-primary">+ Přidat</button>
+              </div>
+            </form>
+          </section>
+
+          <div class="panel toolbar-panel">
+            <div class="toolbar-filters">
+              <select id="prjStatusFilter" aria-label="Filtrovat podle stavu projektu">
+                <option value="all">Všechny stavy</option>
+                <option value="v-planu">V plánu</option>
+                <option value="v-realizaci">V realizaci</option>
+                <option value="pozastaveno">Pozastaveno</option>
+                <option value="dokonceno">Dokončeno</option>
+              </select>
+
+              <select id="prjBranchFilter" aria-label="Filtrovat podle odvětví">
+                <option value="all">Všechna odvětví</option>
+              </select>
+
+              <input type="search" id="prjSearch" class="inline-search" placeholder="Hledat projekt nebo odvětví..." />
+            </div>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Seznam projektů</h2>
+                <p class="muted">Postup, odvětví, rozpočet a rychlé akce</p>
+              </div>
+              <span class="trend trend-neutral" id="prjCountBadge">0 projektů</span>
+            </div>
+            <div id="prjList" class="prj-list"></div>
+          </section>
+        </div>
+
         <!-- DETAIL OSTATNÍCH POLOŽEK MENU -->
         <div id="view-detail" class="view-section hidden">
           <div class="panel detail-banner">
@@ -513,5 +629,6 @@
   <script src="podnikani.js"></script>
   <script src="sklad.js"></script>
   <script src="finance.js"></script>
+  <script src="projekty.js"></script>
 </body>
 </html>
