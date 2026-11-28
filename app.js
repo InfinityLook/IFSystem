@@ -3,7 +3,7 @@ const sectionInfo = {
   podnikani: { title: "Podnikání", desc: "Seznam odvětví a druhů podnikání" },
   sklad: { title: "Sklad", desc: "Přehledné menu zásob podle odvětví" },
   finance: { title: "Finance", desc: "Příjmy, výdaje, bilance po odvětvích a finanční přehled" },
-  projekty: { title: "Projekty", desc: "Strategické iniciativy a rozvojové projekty" },
+  projekty: { title: "Projekty", desc: "Správa projektů, postupu, rozpočtů a termínů podle odvětví" },
   marketing: { title: "Marketing", desc: "Akvizice zákazníků, kampaně a prezentace značek" },
   lide: { title: "Lidé", desc: "Organizační struktura, role, směny a kurýři" },
   kartoteka: { title: "Kartotéka", desc: "Evidence dodavatelů, partnerů a smluvních vztahů" },
@@ -86,9 +86,7 @@ const defaultApprovals = [
   { id: 102, division: "PWA Google Play", title: "Vydání nové produkční verze aplikace", time: "Dnes" }
 ];
 
-const defaultItems = [
-  { id: 1, section: "projekty", tag: "Infrastruktura", title: "Napojení interního portálu na centrální databázi", status: "progress" }
-];
+const defaultItems = [];
 
 let approvals = JSON.parse(localStorage.getItem("il_exec_approvals")) || defaultApprovals;
 let items = JSON.parse(localStorage.getItem("il_ops_items")) || defaultItems;
@@ -204,6 +202,8 @@ function render() {
     window.PodnikaniModule.render();
   } else if (activeSection === "finance" && window.FinanceModule) {
     window.FinanceModule.render();
+  } else if (activeSection === "projekty" && window.ProjektyModule) {
+    window.ProjektyModule.render();
   } else if (activeSection !== "prehled") {
     renderDetail();
   }
@@ -220,11 +220,15 @@ function switchSection(section) {
   document.getElementById("crumbCurrent").textContent = info.title;
 
   const isCustomModule =
-    section === "podnikani" || section === "sklad" || section === "finance";
+    section === "podnikani" ||
+    section === "sklad" ||
+    section === "finance" ||
+    section === "projekty";
   document.getElementById("view-prehled").classList.toggle("hidden", section !== "prehled");
   document.getElementById("view-podnikani").classList.toggle("hidden", section !== "podnikani");
   document.getElementById("view-sklad").classList.toggle("hidden", section !== "sklad");
   document.getElementById("view-finance").classList.toggle("hidden", section !== "finance");
+  document.getElementById("view-projekty").classList.toggle("hidden", section !== "projekty");
   document.getElementById("view-detail").classList.toggle("hidden", section === "prehled" || isCustomModule);
 
   if (section !== "prehled" && !isCustomModule) {
@@ -275,7 +279,8 @@ function openModalWithSection(defaultSec) {
     defaultSec !== "prehled" &&
     defaultSec !== "podnikani" &&
     defaultSec !== "sklad" &&
-    defaultSec !== "finance"
+    defaultSec !== "finance" &&
+    defaultSec !== "projekty"
   ) {
     document.getElementById("itemSection").value = defaultSec;
   }
