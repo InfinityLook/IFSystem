@@ -1,0 +1,139 @@
+.ctr-form-panel {
+  margin-bottom: 1.25rem;
+}
+
+.ctr-form-body {
+  padding: 1.1rem 1.25rem;
+}
+
+.ctr-form-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 1fr 1.05fr 0.95fr 1.2fr auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.ctr-form-grid .form-group {
+  margin-bottom: 0;
+}
+
+.ctr-empty {
+  padding: 2.25rem 1.25rem;
+  text-align: center;
+}
+
+.ctr-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ctr-row {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ctr-row:last-child {
+  border-bottom: none;
+}
+
+.ctr-main {
+  min-width: 240px;
+  flex: 1.4;
+}
+
+.ctr-title-line {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.ctr-name {
+  font-weight: 700;
+  font-size: 0.96rem;
+}
+
+.ctr-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.ctr-branch-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.ctr-due-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.58rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ctr-due-overdue {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.ctr-due-soon {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.ctr-due-ok {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.ctr-meta-line {
+  margin-top: 0.28rem;
+  font-size: 0.83rem;
+}
+
+.ctr-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ctr-status-select {
+  padding: 0.34rem 0.5rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1280px) {
+  .ctr-form-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .ctr-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
